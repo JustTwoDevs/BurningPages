@@ -4,28 +4,30 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Genre extends Model
 {
     use HasFactory;
 
+    protected $table = 'genres';
+
     protected $fillable = [
         'name',
     ];
 
-    public function author_genres(): HasMany
+    public function authors(): BelongsToMany
     {
-        return $this->hasMany(Author_Genres::class, 'genre_id');
+        return $this->belongsToMany(Author::class, 'authorGenres', 'genre_id', 'author_id');
     }
 
-    public function book_genres(): HasMany
+    public function books(): BelongsToMany
     {
-        return $this->hasMany(Book_Genres::class, 'genre_id');
+        return $this->belongsToMany(Book::class, 'bookGenres', 'genre_id', 'book_id');
     }
 
-    public function bookSaga_genres(): HasMany
+    public function bookSagas(): BelongsToMany
     {
-        return $this->hasMany(BookSaga_Genres::class, 'genre_id');
+        return $this->belongsToMany(BookSaga::class, 'bookSagaGenres', 'genre_id', 'bookSaga_id');
     }
 }

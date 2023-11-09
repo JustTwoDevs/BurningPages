@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('author_genres', function (Blueprint $table) {
+        Schema::create('authorGenres', function (Blueprint $table) {
             $table->primary(['author_id', 'genre_id']);
             $table->foreignId('author_id')->nullable(false);
             $table->foreign('author_id')->references('id')->on('authors')->cascadeOnUpdate()->cascadeOnDelete();
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('author_genres');
+        Schema::dropIfExists('authorGenres');
     }
 };
