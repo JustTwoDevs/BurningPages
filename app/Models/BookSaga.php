@@ -4,12 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class BookSaga extends Model
 {
     use HasFactory;
+
+    protected $table = 'bookSagas';
 
     protected $fillable = [
         'name',
@@ -19,18 +20,18 @@ class BookSaga extends Model
         'literaryGenre_id'
     ];
 
-    public function bookSagaWriters(): HasMany
+    public function genres(): BelongsToMany
     {
-        return $this->hasMany(BookSagaWriters::class, 'bookSaga_id');
+        return $this->belongsToMany(Genre::class, 'bookSagaGenres', 'bookSaga_id', 'genre_id');
     }
 
-    public function bookCollections(): HasMany
+    public function authors(): BelongsToMany
     {
-        return $this->hasMany(BookCollections::class, 'bookSaga_id');
+        return $this->belongsToMany(Author::class, 'bookSagaWriters', 'bookSaga_id', 'author_id');
     }
 
-    public function bookSagaGenres(): HasMany
+    public function books(): BelongsToMany
     {
-        return $this->hasMany(BookSaga_Genres::class, 'bookSaga_id');
+        return $this->belongsToMany(Book::class, 'bookCollections', 'bookSaga_id', 'book_id')->withPivot('order');
     }
 }
