@@ -17,21 +17,30 @@ class BookSaga extends Model
         'sinopsis',
         'burningmeter',
         'readersScore',
-        'literaryGenre_id'
     ];
-
-    public function genres(): BelongsToMany
-    {
-        return $this->belongsToMany(Genre::class, 'bookSagaGenres', 'bookSaga_id', 'genre_id');
-    }
-
-    public function authors(): BelongsToMany
-    {
-        return $this->belongsToMany(Author::class, 'bookSagaWriters', 'bookSaga_id', 'author_id');
-    }
 
     public function books(): BelongsToMany
     {
         return $this->belongsToMany(Book::class, 'bookCollections', 'bookSaga_id', 'book_id')->withPivot('order');
+    }
+
+    public function getGenresAttribute()
+    {
+        return Genre::select('genres.name')
+            ->join('bookGenres', 'bookGenres.genre_id', '=', 'genres.id')
+            ->join('bookCollections', 'bookCollections.book_id', '=', 'bookGenres.book_id')
+            ->where('bookCollections.bookSaga_id', '=', $this->id)
+            ->distinct()
+            ->get();
+    }
+
+    public function getAuthorsAttribute()
+    {
+        return Author::select('authors.*')
+            ->join('bookWriters', 'bookWriters.author_id', '=', 'authors.id')
+            ->join('bookCollections', 'bookCollections.book_id', '=', 'bookWriters.book_id')
+            ->where('bookCollections.bookSaga_id', '=', $this->id)
+            ->distinct()
+            ->get();
     }
 }

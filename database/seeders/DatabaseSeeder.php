@@ -26,8 +26,9 @@ class DatabaseSeeder extends Seeder
             BookSeeder::class,
             GenreSeeder::class,
             BookGenresSeeder::class,
-            AuthorGenresSeeder::class,
             BookWritersSeeder::class,
+            BookSagasSeeder::class,
+            BookCollectionsSeeder::class,
         ]);
     }
 }

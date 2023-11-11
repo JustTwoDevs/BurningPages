@@ -31,5 +31,15 @@ class AuthorSeeder extends Seeder
             'biography' => 'Escritor, catedrático y periodista colombiano. Es considerado uno de los mayores escritores del realismo degradado de la época.',
             'nationality_id' => 1,
         ]);
+
+        DB::table('authors')->insert([
+            'name' => 'Suzanne',
+            'lastname' => 'Collins',
+            'pseudonym' => 'Suzanne Collins',
+            'birth_date' => '1962-08-10',
+            'death_date' => null,
+            'biography' => 'La carrera de Suzanne empezó en 1991 como guionista en programas de televisión para niños trabajando para canales como Nickelodeon. Mientras trabajaba en el programa Generation O! de Kids WBOOK, conoció al escritor de libros para niños James Plumiew quien la inspiró a escribir libros infantiles por su cuenta.',
+            'nationality_id' => 2,
+        ]);
     }
 }
