@@ -13,7 +13,8 @@ class GenreController extends Controller
      */
     public function index()
     {
-        //
+        $genres = Genre::all();
+        return response()->json(['genres' => $genres], 200);
     }
 
     /**
@@ -21,7 +22,8 @@ class GenreController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $genre = Genre::create($request->all());
+        return response()->json(['genre' => $genre], 201);
     }
 
     /**
@@ -29,7 +31,7 @@ class GenreController extends Controller
      */
     public function show(Genre $genre)
     {
-        //
+        return response()->json(['genre' => $genre], 200);
     }
 
     /**
@@ -37,7 +39,8 @@ class GenreController extends Controller
      */
     public function update(Request $request, Genre $genre)
     {
-        //
+        $genre->update($request->all());
+        return response()->json(['genre' => $genre], 200);
     }
 
     /**
@@ -45,6 +48,7 @@ class GenreController extends Controller
      */
     public function destroy(Genre $genre)
     {
-        //
+        $genre->delete();
+        return response()->json(['message' => 'Genre successfully removed'], 200);
     }
 }

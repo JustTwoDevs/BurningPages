@@ -28,18 +28,28 @@ class Author extends Model
         return $this->belongsTo(Nationality::class, 'nationality_id');
     }
 
-    public function genres(): BelongsToMany
-    {
-        return $this->belongsToMany(Genre::class, 'authorGenres', 'author_id', 'genre_id');
-    }
-
     public function books(): BelongsToMany
     {
         return $this->belongsToMany(Book::class, 'bookWriters', 'author_id', 'book_id');
     }
 
-    public function bookSagas(): BelongsToMany
+    public function getGenresAttribute()
     {
-        return $this->belongsToMany(BookSaga::class, 'bookSagaWriters', 'author_id', 'bookSaga_id');
+        return Genre::select('genres.name')
+            ->join('bookGenres', 'bookGenres.genre_id', '=', 'genres.id')
+            ->join('bookWriters', 'bookWriters.book_id', '=', 'bookGenres.book_id')
+            ->where('bookWriters.author_id', '=', $this->id)
+            ->distinct()
+            ->get();
+    }
+
+    public function getBookSagasAttribute()
+    {
+        return BookSaga::select('bookSagas.*')
+            ->join('bookCollections', 'bookCollections.bookSaga_id', '=', 'bookSagas.id')
+            ->join('bookWriters', 'bookWriters.book_id', '=', 'bookCollections.book_id')
+            ->where('bookWriters.author_id', '=', $this->id)
+            ->distinct()
+            ->get();
     }
 }

@@ -20,7 +20,6 @@ class Book extends Model
         'burningmeter',
         'readersScore',
         'buyLink',
-        'literaryGenre_id'
     ];
 
     public function genres(): BelongsToMany

@@ -27,5 +27,25 @@ class BookWritersSeeder extends Seeder
             'book_id' => 3,
             'author_id' => 2,
         ]);
+
+        DB::table('bookWriters')->insert([
+            'book_id' => 4,
+            'author_id' => 3,
+        ]);
+
+        DB::table('bookWriters')->insert([
+            'book_id' => 5,
+            'author_id' => 3,
+        ]);
+
+        DB::table('bookWriters')->insert([
+            'book_id' => 6,
+            'author_id' => 3,
+        ]);
+
+        DB::table('bookWriters')->insert([
+            'book_id' => 7,
+            'author_id' => 3,
+        ]);
     }
 }
