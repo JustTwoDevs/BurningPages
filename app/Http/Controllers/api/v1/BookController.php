@@ -27,7 +27,7 @@ class BookController extends Controller
     public function index(Request $request)
     {
         $query = $request->query();
-        $books = Book::with('authors', 'genres', 'bookSagas');
+        $books = Book::with('authors', 'genres', 'bookSagas', 'reviews');
 
         /**
          *  A tener en cuenta:

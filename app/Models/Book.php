@@ -36,4 +36,9 @@ class Book extends Model
     {
         return $this->belongsToMany(BookSaga::class, 'bookCollections', 'book_id', 'bookSaga_id')->withPivot('order');
     }
+    public function bookReviews(){
+        return $this->hasMany(BookReview::class, 'book_id');
+    }
+   
+    
 }

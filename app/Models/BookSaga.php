@@ -24,6 +24,11 @@ class BookSaga extends Model
         return $this->belongsToMany(Book::class, 'bookCollections', 'bookSaga_id', 'book_id')->withPivot('order');
     }
 
+    public function bookSagaReviews(){
+        return $this->hasMany(BookSagaReview::class, 'bookSaga_id');
+    }
+   
+
     public function getGenresAttribute()
     {
         return Genre::select('genres.name')
