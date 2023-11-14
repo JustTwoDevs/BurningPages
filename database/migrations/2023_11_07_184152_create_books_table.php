@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id()->autoIncrement();
             $table->string('title', 100)->nullable(false)->unique();
             $table->mediumText('sinopsis')->nullable(false);
-            $table->date('publication_date')->nullable(false);
+            $table->date('publication_date')->nullable(true);
             $table->string('original_language', 50)->nullable(false);
             $table->double('burningmeter')->nullable(false);
             $table->double('readersScore')->nullable(false);

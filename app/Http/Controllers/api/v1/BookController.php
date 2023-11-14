@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Book;
 use App\Models\Author;
 use App\Models\BookSaga;
-use App\Models\Genre;
 use Illuminate\Http\Request;
+use App\Http\Requests\api\v1\BookStoreRequest;
+use App\Http\Requests\api\v1\BookUpdateRequest;
+use App\Http\Resources\BookResource;
 
 class BookController extends Controller
 {
@@ -27,7 +29,7 @@ class BookController extends Controller
     public function index(Request $request)
     {
         $query = $request->query();
-        $books = Book::with('authors', 'genres', 'bookSagas');
+        $books = Book::query()->with('authors', 'genres', 'bookSagas');
 
         /**
          *  A tener en cuenta:
@@ -40,19 +42,19 @@ class BookController extends Controller
          */
 
         /**
-         * Filtrar por género
+         * Filtrar por género.
          * whereIn - Agrega el operador in a la consulta
          *     whereIn('columna', [valor1, valor2])
          */
         if (isset($query['genres'])) {
-            $genres = explode(',', $query['genres']);
+            $genres = explode(',', str_replace('-', ' ', $query['genres']));
             $books = $books->whereHas('genres', function ($q) use ($genres) {
                 $q->whereIn('genres.name', $genres);
             });
         }
 
         /**
-         * Filtrar por rango de fecha de publicación
+         * Filtrar por rango de fecha de publicación.
          * whereBetween - Agrega el operador between a la consulta
          *      whereBetween('columna', [valor1, valor2])
          */
@@ -62,21 +64,22 @@ class BookController extends Controller
         }
 
         /**
-         * Filtrar por idioma original
+         * Filtrar por idioma original.
          */
         if (isset($query['originalLanguage'])) {
             $books = $books->where('original_language', $query['originalLanguage']);
         }
 
         /**
-         * Filtrar por titulo
+         * Filtrar por titulo.
          */
         if (isset($query['title'])) {
-            $books = $books->where('title', 'like', '%' . $query['title'] . '%');
+            $search = str_replace('-', ' ', $query['title']);
+            $books = $books->where('title', 'like', '%' . $search . '%');
         }
 
         /**
-         * Filtrar por autor
+         * Filtrar por autor.
          * whereRaw - Agregar una clausula where sin formato, permitiendo expresiones SQL
          * Acepta un segundo parámetro con los valores a reemplazar en la consulta. El simbolo ? representa el valor a reemplazar
          */
@@ -103,34 +106,42 @@ class BookController extends Controller
             // Ordenamiento por valoración de las reseñas en burningmeter y readerScore
 
         }
+
+        $books = $books->get();
+
+        return response()->json(['books' =>  BookResource::collection($books)], 200);
     }
 
     /**
-     * Display a listing of the resource by author.
+     * Obtener todos los libros de un autor.
      */
     public function indexByAuthor(Request $request, string $author)
     {
         $books = Author::find($author)->books()->get();
-        return response()->json(['books' => $books], 200);
+        $books->load(['genres']);
+        return response()->json(['books' =>  BookResource::collection($books)], 200);
     }
 
     /**
-     * Display a listing of the resource by book saga.
+     * Obtener todos los libros de una saga.
      */
-    public function indexByBookSaga(Request $request, string $booksaga)
+    public function indexByBookSaga(Request $request, string $bookSaga)
     {
-        $books = BookSaga::find($booksaga)->books()->get();
-        return response()->json(['books' => $books], 200);
+        $books = BookSaga::find($bookSaga)->books()->get();
+        $books->load(['genres']);
+        return response()->json(['books' => BookResource::collection($books)], 200);
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Crear un nuevo libro.
      */
-    public function store(Request $request)
+    public function store(BookStoreRequest $request)
     {
+        $request['burningmeter'] = 0;
+        $request['readersScore'] = 0;
         $book = Book::create($request->all());
-        $book->authors()->attach($request->authors);
-        $book->genres()->attach($request->genres);
+        if ($request->authors) $book->authors()->attach($request->authors);
+        if ($request->genres) $book->genres()->attach($request->genres);
         return response()->json(['book' => $book], 201);
     }
 
@@ -141,40 +152,31 @@ class BookController extends Controller
     {
         $book = Book::find($book);
         $book->genres()->attach($genre);
-        return response()->json(['book' => $book], 201);
+        $book->load('genres');
+        return response()->json(['book' => new BookResource($book)], 201);
     }
 
-    /**
-     * Añadir un autor a un libro
-     */
-    public function addAuthor(Request $request, string $book, string $author)
-    {
-        $book = Book::find($book);
-        $book->authors()->attach($author);
-        return response()->json(['book' => $book], 201);
-    }
 
     /**
-     * Display the specified resource.
+     * Obtener un libro.
      */
     public function show(Book $book)
     {
         $book->load(['authors', 'genres', 'bookSagas']);
-        return response()->json(['book' => $book], 200);
+        return response()->json(['book' => new BookResource($book)], 200);
     }
 
     /**
-     * Update the specified resource in storage.
+     * Actualizar un libro.
      */
-    public function update(Request $request, Book $book)
+    public function update(BookUpdateRequest $request, Book $book)
     {
         $book->update($request->all());
-        $book->authors()->sync($request->authors);
-        return response()->json(['book' => $book], 200);
+        return response()->json(['book' => new BookResource($book)], 200);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remover un libro.
      */
     public function destroy(Book $book)
     {
@@ -192,6 +194,7 @@ class BookController extends Controller
     {
         $book = Book::find($book);
         $book->genres()->detach($genre);
-        return response()->json(['book' => $book], 201);
+        $book->load('genres');
+        return response()->json(['book' => new BookResource($book)], 201);
     }
 }
