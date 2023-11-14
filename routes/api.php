@@ -6,6 +6,11 @@ use App\Http\Controllers\api\v1\BookController;
 use App\Http\Controllers\api\v1\AuthorController;
 use App\Http\Controllers\api\v1\BookSagaController;
 use App\Http\Controllers\api\v1\GenreController;
+use App\Http\Controllers\api\v1\BookReviewController;
+use App\Http\Controllers\api\v1\BookSagaReviewController;
+use App\Http\Controllers\api\v1\ReviewRateController;
+use App\Http\Controllers\api\v1\SagaReviewRateController;
+use App\Http\Controllers\api\v1\BackingRequestController;
 
 /*
 |--------------------------------------------------------------------------
@@ -44,6 +49,11 @@ Route::apiResources([
     "v1/authors" => AuthorController::class,
     "v1/bookSagas" => BookSagaController::class,
     "v1/genres" => GenreController::class,
+    "v1/backingrequests" => BackingRequestController::class,
+    "v1/reviews" => BookReviewController::class,
+    "v1/sagaReviews" => BookSagaReviewController::class,
+    "v1/reviewRates" => ReviewRateController::class,
+    "v1/sagaReviewRates" => SagaReviewRateController::class,
 ]);
 
 /**
@@ -81,3 +91,16 @@ Route::get('v1/authors/{author}/bookSagas', [BookSagaController::class, 'indexBy
 Route::get('v1/books/{book}/bookSagas', [BookSagaController::class, 'indexByBook']);
 Route::post('v1/bookSagas/{bookSaga}/books/{book}', [BookSagaController::class, 'addBook']);
 Route::delete('v1/bookSagas/{bookSaga}/books/{book}', [BookSagaController::class, 'removeBook']);
+
+/**
+ * Reseñas
+ * 1. Obtener todas las reseñas de un usuario
+ * 2. Obtener todos las reseñas de un libro  
+ * 3. Obtener todas las reseñas de una saga
+ */
+
+
+/**
+ * Solicitudes de aval 
+ * 1. Obtener todas las solicitudes de aval de un usuario 
+ */

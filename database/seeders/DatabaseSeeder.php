@@ -24,11 +24,17 @@ class DatabaseSeeder extends Seeder
             NationalitySeeder::class,
             AuthorSeeder::class,
             BookSeeder::class,
+            UserSeeder::class,
             GenreSeeder::class,
             BookGenresSeeder::class,
             BookWritersSeeder::class,
             BookSagasSeeder::class,
             BookCollectionsSeeder::class,
+            BookReviewSeeder::class,
+            BookSagaReviewSeeder::class,
+            ReviewRateSeeder::class,
+           SagaReviewRateSeeder::class,
+            BackingRequestSeeder::class,
         ]);
     }
 }
