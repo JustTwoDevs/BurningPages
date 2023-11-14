@@ -5,88 +5,155 @@ namespace App\Http\Controllers\api\v1;
 use App\Http\Controllers\Controller;
 use App\Models\Author;
 use App\Models\Book;
+use App\Models\Nationality;
 use Illuminate\Http\Request;
+use App\Http\Requests\api\v1\AuthorStoreRequest;
+use App\Http\Requests\api\v1\AuthorUpdateRequest;
+use App\Http\Resources\AuthorResource;
 
 class AuthorController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Obtener todos los autores.
+     * Es posible filtrar por nombre completo, pseudónimo, nacionalidad y género.
+     * Es posible ordenar por nombre completo.
+     * 
+     * Ejemplos:
+     * /authors?name=J.K-Rowling
+     * /authors?pseudonym=Gabo
+     * /authors?nationality=Colombia
+     * /authors?genres=novel,romance
+     * /authors?sortBy=name&sortOrder=asc -> Si no se especifica el orden, se ordena de forma descendente
      */
-    public function index()
+    public function index(Request $request)
     {
-        $authors = Author::with('books')->get();
+        $query = $request->query();
+        $authors = Author::query()->with(['books', 'nationality']);
+
+        /**
+         * Filtrar por nombre completo.
+         */
+        if (isset($query['name'])) {
+            $search = str_replace('-', ' ', $query['name']);
+            $authors = $authors->whereRaw('concat(name, " ", lastname) like ?', '%' . $search . '%');
+        }
+
+        /**
+         * Filtrar por pseudónimo.
+         */
+        if (isset($query['pseudonym'])) {
+            $search = str_replace('-', ' ', $query['pseudonym']);
+            $authors = $authors->where('pseudonym', 'like', '%' . $search . '%');
+        }
+
+        /**
+         * Filtrar por nacionalidad.
+         */
+        if (isset($query['nationality'])) {
+            $search = str_replace('-', ' ', $query['nationality']);
+            $nationality = Nationality::where('name', $search)->first();
+            $authors = $authors->where('nationality_id', $nationality->id);
+        }
+
+        /**
+         * Filtrar por género.
+         */
+        if (isset($query['genres'])) {
+            $genres = explode(',', str_replace('-', ' ', $query['genres']));
+            $authors = $authors->whereHas('books', function ($q) use ($genres) {
+                $q->whereHas('genres', function ($query) use ($genres) {
+                    $query->whereIn('name', $genres);
+                });
+            });
+        }
+
+        /**
+         * Ordenamiento por nombre.
+         */
+        if (isset($query['sortBy'])) {
+            $authors = $authors->sortBy('name', $query['sortOrder'] ?? 'desc');
+        }
+
+        $authors = $authors->get();
+
         foreach ($authors as $author) {
             $author["genres"] = $author->getGenresAttribute();
             $author["bookSagas"] = $author->getBookSagasAttribute();
         }
-        return response()->json(['authors' => $authors], 200);
+
+        return response()->json(['authors' => AuthorResource::collection($authors)], 200);
     }
 
     /**
-     * Display a listing of the resource by the book.
+     * Obtener todos los autores asociados a un libro.
      */
     public function indexByBook(Request $request, string $book)
     {
         $authors = Book::find($book)->authors()->get();
-        return response()->json(['authors' => $authors], 200);
+        $authors->load('nationality');
+        return response()->json(['authors' => AuthorResource::collection($authors)], 200);
     }
 
     /**
-     * Display a listing of the resource by the book saga.
+     * Obtener todos los autores asociados a una saga.
      */
-    public function indexByBookSaga(Request $request, string $booksaga)
+    public function indexByBookSaga(Request $request, string $bookSaga)
     {
-        //Autor no tiene relación directa con BookSaga, por lo que hay que hacer una consulta más compleja
         $authors = Author::select('authors.*')
             ->join('bookWriters', 'bookWriters.author_id', '=', 'authors.id')
             ->join('bookCollections', 'bookCollections.book_id', '=', 'bookWriters.book_id')
-            ->where('bookCollections.bookSaga_id', '=', $booksaga)
+            ->where('bookCollections.bookSaga_id', '=', $bookSaga)
             ->distinct()
+            ->with('nationality')
             ->get();
-        return response()->json(['authors' => $authors], 200);
+
+        return response()->json(['authors' => AuthorResource::collection($authors)], 200);
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Crear un nuevo autor.
      */
-    public function store(Request $request)
+    public function store(AuthorStoreRequest $request)
     {
         $author = Author::create($request->all());
+        $author->load('nationality');
         return response()->json(['author' => $author], 201);
     }
 
     /**
-     * Añadir un libro a un autor
+     * Añadir un libro a un autor.
      */
     public function addBook(Request $request, string $author, string $book)
     {
         $author = Author::find($author);
         $author->books()->attach($book);
-        return response()->json(['author' => $author], 201);
+        $author->load('books');
+        return response()->json(['author' => new AuthorResource($author)], 201);
     }
 
     /**
-     * Display the specified resource.
+     * Obtener un autor.
      */
     public function show(Author $author)
     {
         $author->load('books');
         $author["genres"] = $author->getGenresAttribute();
         $author["bookSagas"] = $author->getBookSagasAttribute();
-        return response()->json(['author' => $author], 200);
+        return response()->json(['author' => new AuthorResource($author)], 200);
     }
 
     /**
-     * Update the specified resource in storage.
+     * Actualizar un autor.
      */
-    public function update(Request $request, Author $author)
+    public function update(AuthorUpdateRequest $request, Author $author)
     {
         $author->update($request->all());
-        return response()->json(['author' => $author], 200);
+        $author->load('nationality');
+        return response()->json(['author' => new AuthorResource($author)], 200);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Eliminar un autor.
      */
     public function destroy(Author $author)
     {
@@ -95,12 +162,13 @@ class AuthorController extends Controller
     }
 
     /**
-     * Remover un libro a un autor
+     * Remover un libro a un autor.
      */
     public function removeBook(Request $request, string $author, string $book)
     {
         $author = Author::find($author);
         $author->books()->detach($book);
-        return response()->json(['author' => $author], 201);
+        $author->load('books');
+        return response()->json(['author' => new AuthorResource($author)], 201);
     }
 }
