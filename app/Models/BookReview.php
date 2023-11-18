@@ -26,7 +26,7 @@ class BookReview extends Model
     public function user(){
         return $this->belongsTo(User::class, 'user_id');
     }
-    public function reviewRate(){
+    public function reviewRates(){
         return $this->hasMany(ReviewRate::class, 'bookReview_id');
     }
 

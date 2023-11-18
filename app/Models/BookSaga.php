@@ -24,7 +24,7 @@ class BookSaga extends Model
         return $this->belongsToMany(Book::class, 'bookCollections', 'bookSaga_id', 'book_id')->withPivot('order');
     }
 
-    public function bookSagaReviews(){
+    public function reviews(){
         return $this->hasMany(BookSagaReview::class, 'bookSaga_id');
     }
    

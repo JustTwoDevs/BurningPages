@@ -13,7 +13,7 @@ class ReviewRate extends Model
     protected $fillable = [
        'value',
        'bookReview_id',
-         'user_id',
+        'user_id',
     ];
 
     public function bookReview(){
