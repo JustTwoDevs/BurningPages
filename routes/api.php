@@ -40,13 +40,14 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
  * Ordenar por:
  * 1. Valoración de las reseñas en burningmeter y readerScore -> Books, BookSagas
  * 2. Fecha de publicación -> Books
+ * 3. Nombre completo -> Authors
  */
 
 // CRUD de todos los modelos
 Route::apiResources([
     "v1/books" => BookController::class,
     "v1/authors" => AuthorController::class,
-    "v1/booksagas" => BookSagaController::class,
+    "v1/bookSagas" => BookSagaController::class,
     "v1/genres" => GenreController::class,
     "v1/backingrequests" => BackingRequestController::class,
     "v1/reviews" => BookReviewController::class,
@@ -63,7 +64,7 @@ Route::apiResources([
  * 4. Remover un libro a un autor
  */
 Route::get('v1/books/{book}/authors', [AuthorController::class, 'indexByBook']);
-Route::get('v1/bookSagas/{booksaga}/authors', [AuthorController::class, 'indexByBookSaga']);
+Route::get('v1/bookSagas/{bookSaga}/authors', [AuthorController::class, 'indexByBookSaga']);
 Route::post('v1/authors/{author}/books/{book}', [AuthorController::class, 'addBook']);
 Route::delete('v1/authors/{author}/books/{book}', [AuthorController::class, 'removeBook']);
 
@@ -76,7 +77,7 @@ Route::delete('v1/authors/{author}/books/{book}', [AuthorController::class, 'rem
  * 5. Añadir una reseña a un libro 
  */
 Route::get('v1/authors/{author}/books', [BookController::class, 'indexByAuthor']);
-Route::get('v1/bookSagas/{booksaga}/books', [BookController::class, 'indexByBookSaga']);
+Route::get('v1/bookSagas/{bookSaga}/books', [BookController::class, 'indexByBookSaga']);
 Route::post('v1/books/{book}/genres/{genre}', [BookController::class, 'addGenre']);
 Route::delete('v1/books/{book}/genres/{genre}', [BookController::class, 'removeGenre']);
 Route::post('v1/books/{book}/reviews/{review}', [BookController::class, 'addReview']);
@@ -94,6 +95,7 @@ Route::get('v1/books/{book}/bookSagas', [BookSagaController::class, 'indexByBook
 Route::post('v1/bookSagas/{booksaga}/books/{book}', [BookSagaController::class, 'addBook']);
 Route::delete('v1/bookSagas/{booksaga}/books/{book}', [BookSagaController::class, 'removeBook']);
 Route::post('v1/bookSagas/{booksaga}/reviews/{review}', [BookSagaController::class, 'addReview']);
+
 
 
 /**
@@ -127,7 +129,7 @@ Route::patch('v1/sagaReviews/{review}/hide', [BookSagaReviewController::class, '
 Route::post('v1/sagaReviews/{review}/sagareviewrates/{reviewRate}', [BookSagaReviewController::class, 'addReviewRate']);
 
 
- /**
+/**
  * Solicitudes de aval 
  * 1. Obtener todas las solicitudes de aval de un usuario 
  * 2. Aprobar una solicitud de aval - usuario administrador
@@ -146,3 +148,4 @@ Route::patch('v1/backingrequests/{backingRequest}/reject', [BackingRequestContro
 
  Route::get('v1/reviews/{review}/reviewRates', [ReviewRateController::class, 'indexByReview']);
  Route::get('v1/sagaReviews/{review}/reviewRates', [SagaReviewRateController::class, 'indexByReview']);
+

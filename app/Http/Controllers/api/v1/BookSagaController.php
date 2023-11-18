@@ -4,71 +4,127 @@ namespace App\Http\Controllers\api\v1;
 
 use App\Http\Controllers\Controller;
 use App\Models\BookSaga;
-use App\Models\Author;
 use App\Models\Book;
 use Illuminate\Http\Request;
+use App\Http\Requests\api\v1\BookSagaStoreRequest;
+use App\Http\Requests\api\v1\BookSagaUpdateRequest;
+use App\Http\Requests\api\v1\AddBookStoreRequest;
+use App\Http\Resources\BookSagaResource;
 
 class BookSagaController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Obtener todas las sagas.
+     * Es posible filtrar por generos, nombre y autor.
+     * Es posible ordenar por valoración de las reseñas en burningmeter y readerScore.
      * 
+     * Ejemplos:
+     * /bookSagas?genres=fantasy,romance
+     * /bookSagas?name=Harry-Potter
+     * /bookSagas?author=J.K-Rowling
      */
     public function index()
     {
-        $bookSagas = BookSaga::with('books')->get();
+        $query = request()->query();
+        $bookSagas = BookSaga::query()->with('books');
 
+        /**
+         * Filtrar por nombre.
+         */
+        if (isset($query['name'])) {
+            $search = str_replace('-', ' ', $query['name']);
+            $bookSagas = $bookSagas->where('name', 'like', '%' . $search . '%');
+        }
+
+        /**
+         * Filtrar por generos.
+         */
+        if (isset($query['genres'])) {
+            $genres = explode(',', str_replace('-', ' ', $query['genres']));
+            $bookSagas = $bookSagas->whereHas('books', function ($q) use ($genres) {
+                $q->whereHas('genres', function ($query) use ($genres) {
+                    $query->whereIn('name', $genres);
+                });
+            });
+        }
+
+        /**
+         * Filtrar por autor.
+         */
+        if (isset($query['author'])) {
+            $search = str_replace('-', ' ', $query['author']);
+            $bookSagas = $bookSagas->whereHas('books', function ($q) use ($search) {
+                $q->whereHas('authors', function ($query) use ($search) {
+                    $query->whereRaw('concat(name, " ", lastname) like ?', '%' . $search . '%');
+                });
+            });
+        }
+
+        /**
+         * Ordenar por valoración de las reseñas en burningmeter y readerScore.
+         */
+        // Pendiente
+
+        $bookSagas = $bookSagas->get();
         foreach ($bookSagas as $bookSaga) {
             $bookSaga["genres"] = $bookSaga->getGenresAttribute();
             $bookSaga["authors"] = $bookSaga->getAuthorsAttribute();
         }
-        return response()->json(['bookSagas' => $bookSagas], 200);
+
+        return response()->json(['bookSagas' => BookSagaResource::collection($bookSagas)], 200);
     }
 
     /**
-     * Display a listing of the resource by author.
+     * Obtener todas las sagas de un autor.
      */
     public function indexByAuthor(Request $request, string  $author)
     {
-        //BookSaga no tiene relación directa con Author, por lo que hay que hacer una consulta más compleja
         $bookSagas = BookSaga::select('bookSagas.*')
-            ->join('bookWriters', 'bookWriters.bookSaga_id', '=', 'bookSagas.id')
-            ->join('authors', 'authors.id', '=', 'bookWriters.author_id')
-            ->where('authors.id', '=', $author)
+            ->join('bookCollections', 'bookCollections.bookSaga_id', '=', 'bookSagas.id')
+            ->join('bookWriters', 'bookWriters.book_id', '=', 'bookCollections.book_id')
+            ->where('bookWriters.author_id', '=', $author)
             ->distinct()
+            - with('books')
             ->get();
-        return response()->json(['bookSagas' => $bookSagas], 200);
+        return response()->json(['bookSagas' => BookSagaResource::collection($bookSagas)], 200);
     }
 
     /**
-     * Display a listing of the resource by book.
+     * Obtener todas las sagas de un libro.
      */
     public function indexByBook(Request $request, string  $book)
     {
         $bookSagas = Book::find($book)->bookSagas()->get();
-        return response()->json(['bookSagas' => $bookSagas], 200);
+        $bookSagas->load('books');
+        return response()->json(['bookSagas' => BookSagaResource::collection($bookSagas)], 200);
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Crear una nueva saga.
      */
-    public function store(Request $request)
+    public function store(BookSagaStoreRequest $request)
     {
+        $request['burningmeter'] = 0;
+        $request['readersScore'] = 0;
         $bookSaga = BookSaga::create($request->all());
-        $bookSaga->authors()->attach($request->authors);
-        $bookSaga->books()->attach($request->books);
-        $bookSaga->genres()->attach($request->genres);
+        if (isset($request->books)) {
+            $bookSaga->books()->attach($request->books, ['order' => 1]);
+            $bookSaga->load('books');
+            $bookSaga["genres"] = $bookSaga->getGenresAttribute();
+            $bookSaga["authors"] = $bookSaga->getAuthorsAttribute();
+        }
         return response()->json(['bookSaga' => $bookSaga], 201);
     }
 
     /**
      * Añadir un libro a una saga
      */
-    public function addBook(Request $request, string $bookSaga, string $book)
+    public function addBook(AddBookStoreRequest $request, string $bookSaga, string $book)
     {
         $bookSaga = BookSaga::find($bookSaga);
-        $bookSaga->books()->attach($book);
-        return response()->json(['bookSaga' => $bookSaga], 201);
+        $bookSaga->books()->attach($book, ['order' => $request->order]);
+        $bookSaga->load('books');
+        return response()->json(['bookSaga' => new BookSagaResource($bookSaga)], 201);
     }
 
     public function addReview(Request $request, string $bookSaga, string $sagaReview)
@@ -79,37 +135,32 @@ class BookSagaController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Obtener una saga.
      */
     public function show(BookSaga $bookSaga)
     {
-        info('BookSaga data:');
         $bookSaga->load('books');
         $bookSaga["genres"] = $bookSaga->getGenresAttribute();
         $bookSaga["authors"] = $bookSaga->getAuthorsAttribute();
 
-        return response()->json(['bookSaga' => $bookSaga], 200);
+        return response()->json(['bookSaga' => new BookSagaResource($bookSaga)], 200);
     }
 
     /**
-     * Update the specified resource in storage.
+     * Actualizar una saga.
      */
-    public function update(Request $request, BookSaga $bookSaga)
+    public function update(BookSagaUpdateRequest $request, BookSaga $bookSaga)
     {
         $bookSaga->update($request->all());
-        $bookSaga->authors()->sync($request->authors);
-        $bookSaga->books()->sync($request->books);
-        return response()->json(['bookSaga' => $bookSaga], 200);
+        return response()->json(['bookSaga' => new BookSagaResource($bookSaga)], 200);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Eliminar una saga.
      */
     public function destroy(BookSaga $bookSaga)
     {
         $bookSaga->books()->detach();
-        $bookSaga->authors()->detach();
-        $bookSaga->genres()->detach();
         $bookSaga->delete();
         return response()->json(['message' => 'Book Saga successfully removed'], 200);
     }
@@ -121,6 +172,7 @@ class BookSagaController extends Controller
     {
         $bookSaga = BookSaga::find($bookSaga);
         $bookSaga->books()->detach($book);
-        return response()->json(['bookSaga' => $bookSaga], 201);
+        $bookSaga->load('books');
+        return response()->json(['bookSaga' => new BookSagaResource($bookSaga)], 201);
     }
 }
