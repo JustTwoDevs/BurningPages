@@ -154,12 +154,19 @@ class BookController extends Controller
         return response()->json(['book' => $book], 201);
     }
 
+    public function addReview(Request $request, string $book, string $review)
+    {
+        $book = Book::find($book);
+        $book->reviews()->attach($review);
+        return response()->json(['book' => $book], 201);
+    }
+
     /**
      * Display the specified resource.
      */
     public function show(Book $book)
     {
-        $book->load(['authors', 'genres', 'bookSagas']);
+        $book->load(['authors', 'genres', 'bookSagas', 'reviews']);
         return response()->json(['book' => $book], 200);
     }
 

@@ -20,4 +20,7 @@ class SagaReviewRate extends Model
     public function bookSagaReview(){
         return $this->belongsTo(BookSagaReview::class, 'bookSagaReview_id');
     }
+    public function user(){
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

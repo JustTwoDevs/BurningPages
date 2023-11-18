@@ -4,15 +4,27 @@ namespace App\Http\Controllers\api\v1;
 
 use App\Http\Controllers\Controller;
 use App\Models\SagaReviewRate;
+use App\Models\BookSagaReview;
 use Illuminate\Http\Request;
 
 class SagaReviewRateController extends Controller
 {
     public function index()
     {
-        $sagaReviewRates = SagaReviewRate::orderBy('id', 'asc')->get();
+        $sagaReviewRates = SagaReviewRate::with('user', 'bookSagaReview')->orderBy('user_id', 'asc')->orderBy('bookSagaReview_id', 'asc')->get();
 
         return response()->json(['sagaReviewRates' => $sagaReviewRates], 200);
+    }
+    
+    public function indexByReview(string $review){
+        $review=BookSagaReview::find($review);
+        if(!$review){
+            return response()->json(['message'=>'review not found'],404);
+        }
+
+        $review->load('reviewSagaRates');
+        return response()->json(['sagaReviewRates'=>$review->reviewSagaRates],200);
+
     }
 
     /**

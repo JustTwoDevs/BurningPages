@@ -5,14 +5,26 @@ namespace App\Http\Controllers\api\v1;
 use App\Http\Controllers\Controller;
 use App\Models\ReviewRate;
 use Illuminate\Http\Request;
+use App\Models\BookReview;
 
 class ReviewRateController extends Controller
 {
     public function index()
     {
-        $reviewRates = ReviewRate::orderBy('id', 'asc')->get();
+     $reviewRates = ReviewRate::with('user', 'bookReview')->orderBy('user_id', 'asc')->orderBy('bookReview_id', 'asc')->get();
 
-        return response()->json(['reviewRates' => $reviewRates], 200);
+    return response()->json(['reviewRates' => $reviewRates], 200);
+    }
+
+    public function indexByReview(string $review){
+        $review=BookReview::find($review);
+        if(!$review){
+            return response()->json(['message'=>'review not found'],404);
+        }
+
+        $review->load('reviewRates');
+        return response()->json(['reviewRates'=>$review->reviewRates],200);
+
     }
 
     /**

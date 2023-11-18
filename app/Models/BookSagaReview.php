@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+
 class BookSagaReview extends Model
 {
     use HasFactory;
@@ -26,7 +27,7 @@ class BookSagaReview extends Model
     public function user(){
         return $this->belongsTo(User::class, 'user_id');
     }
-    public function reviewSagaRate(){
+    public function reviewSagaRates(){
         return $this->hasMany(SagaReviewRate::class, 'bookSagaReview_id');
     }
 }

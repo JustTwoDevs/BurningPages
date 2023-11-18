@@ -71,6 +71,13 @@ class BookSagaController extends Controller
         return response()->json(['bookSaga' => $bookSaga], 201);
     }
 
+    public function addReview(Request $request, string $bookSaga, string $sagaReview)
+    {
+        $bookSaga = BookSaga::find($bookSaga);
+        $bookSaga->reviews()->attach($sagaReview);
+        return response()->json(['bookSaga' => $bookSaga], 201);
+    }
+
     /**
      * Display the specified resource.
      */

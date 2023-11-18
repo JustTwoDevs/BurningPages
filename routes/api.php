@@ -50,9 +50,9 @@ Route::apiResources([
     "v1/genres" => GenreController::class,
     "v1/backingrequests" => BackingRequestController::class,
     "v1/reviews" => BookReviewController::class,
-    "v1/sagaReviews" => BookSagaReviewController::class,
-    "v1/reviewRates" => ReviewRateController::class,
-    "v1/sagaReviewRates" => SagaReviewRateController::class,
+    "v1/sagareviews" => BookSagaReviewController::class,
+    "v1/reviewrates" => ReviewRateController::class,
+    "v1/sagareviewrates" => SagaReviewRateController::class,
 ]);
 
 /**
@@ -73,11 +73,13 @@ Route::delete('v1/authors/{author}/books/{book}', [AuthorController::class, 'rem
  * 2. Obtener todos los libros de una saga
  * 3. Añadir un genero a un libro
  * 4. Remover un genero a un libro
+ * 5. Añadir una reseña a un libro 
  */
 Route::get('v1/authors/{author}/books', [BookController::class, 'indexByAuthor']);
 Route::get('v1/bookSagas/{booksaga}/books', [BookController::class, 'indexByBookSaga']);
 Route::post('v1/books/{book}/genres/{genre}', [BookController::class, 'addGenre']);
 Route::delete('v1/books/{book}/genres/{genre}', [BookController::class, 'removeGenre']);
+Route::post('v1/books/{book}/reviews/{review}', [BookController::class, 'addReview']);
 
 /**
  * BookSagas
@@ -85,22 +87,62 @@ Route::delete('v1/books/{book}/genres/{genre}', [BookController::class, 'removeG
  * 2. Obtener todos las sagas asociadas a un libro
  * 3. Añadir un libro a una saga
  * 4. Remover un libro a una saga
+ * 5. Añadir una reseña a una saga
  */
 Route::get('v1/authors/{author}/bookSagas', [BookSagaController::class, 'indexByAuthor']);
 Route::get('v1/books/{book}/bookSagas', [BookSagaController::class, 'indexByBook']);
 Route::post('v1/bookSagas/{booksaga}/books/{book}', [BookSagaController::class, 'addBook']);
 Route::delete('v1/bookSagas/{booksaga}/books/{book}', [BookSagaController::class, 'removeBook']);
+Route::post('v1/bookSagas/{booksaga}/reviews/{review}', [BookSagaController::class, 'addReview']);
 
 
 /**
- * Reseñas
- * 1. Obtener todas las reseñas de un usuario
- * 2. Obtener todos las reseñas de un libro  
- * 3. Obtener todas las reseñas de una saga
+ * Reseñas de un libro 
+ * 1. Obtener todas las reseñas de un usuario 
+ * 2. Obtener todos las reseñas de un libro
+ * 3. Publicar una reseña - usuario registrado
+ * 4. Ocultar una reseña - usuario administrador
+ * 5. Publicar una reseña - usuario administrador
+ * 6. Añadirle una calificacion a una reseña 
  */
+Route::get('v1/users/{user}/reviews', [BookReviewController::class, 'indexByUser']);
+Route::get('v1/books/{book}/reviews', [BookReviewController::class, 'indexByBook']);
+Route::patch('v1/reviews/{review}/publish', [BookReviewController::class, 'publish']);
+Route::patch('v1/reviews/{review}/hide', [BookReviewController::class, 'occult']);
+
+Route::post('v1/reviews/{review}/reviewrates/{reviewRate}', [BookReviewController::class, 'addReviewRate']);
+
+/**
+ * Reseñas de una saga 
+ *  1. Obtener todas las reseñas de una saga
+ *  2. Publicar una reseña de una saga - usuario registrado  
+ *  3. Ocultar una reseña - usuario administrador
+ *  4. Publicar una reseña de una saga - usuario administrador  
+ *  5. Añadirle una calificacion a una reseña de una saga
+ */
+Route::get('v1/bookSagas/{booksaga}/reviews', [BookSagaReviewController::class, 'indexByBookSaga']);
+Route::patch('v1/sagaReviews/{review}/publish', [BookSagaReviewController::class, 'publish']);
+Route::patch('v1/sagaReviews/{review}/hide', [BookSagaReviewController::class, 'occult']);
+
+Route::post('v1/sagaReviews/{review}/sagareviewrates/{reviewRate}', [BookSagaReviewController::class, 'addReviewRate']);
 
 
  /**
  * Solicitudes de aval 
  * 1. Obtener todas las solicitudes de aval de un usuario 
+ * 2. Aprobar una solicitud de aval - usuario administrador
+ * 3. Rechazar una solicitud de aval - usuario administrador
  */
+
+Route::get('v1/users/{user}/backingrequests', [BackingRequestController::class, 'indexByUser']);
+Route::patch('v1/backingrequests/{backingRequest}/approve', [BackingRequestController::class, 'approve']);
+Route::patch('v1/backingrequests/{backingRequest}/reject', [BackingRequestController::class, 'reject']);
+
+/**
+ * Calificaciones de una reseña 
+ * 1. Obtener todas las calificaciones de una reseña de un libro 
+ * 2. Obtener todas las calificaciones de una reseña de una saga 
+ */
+
+ Route::get('v1/reviews/{review}/reviewRates', [ReviewRateController::class, 'indexByReview']);
+ Route::get('v1/sagaReviews/{review}/reviewRates', [SagaReviewRateController::class, 'indexByReview']);
