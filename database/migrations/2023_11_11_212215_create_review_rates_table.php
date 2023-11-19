@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('reviewRates', function (Blueprint $table) {
-            $table->primary(['bookReview_id', 'user_id']);
+            $table->id()->autoincrement();
             $table->foreignId('bookReview_id')->nullable(false);
             $table->foreign('bookReview_id')->references('id')->on('bookReviews');
             $table->foreignId('user_id')->nullable(false);

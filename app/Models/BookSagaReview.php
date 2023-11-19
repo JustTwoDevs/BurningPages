@@ -15,8 +15,12 @@ class BookSagaReview extends Model
     protected $fillable = [
         'rate',
         'content',
-        'state',
         'bookSaga_id',
+        'user_id'
+    ];
+
+    protected $atributes = [
+        'state' => 'draft',
     ];
 
     

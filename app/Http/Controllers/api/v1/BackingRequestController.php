@@ -4,7 +4,11 @@ namespace App\Http\Controllers\api\v1;
 
 use App\Http\Controllers\Controller;
 use App\Models\BackingRequest;
+use App\Models\User;
 use Illuminate\Http\Request;
+use App\Http\Requests\api\v1\BackingRequestStoreRequest;
+use App\Http\Requests\api\v1\BackingRequestUpdateRequest;
+use App\Http\Resources\api\BackingRequestResource;
 
 class BackingRequestController extends Controller
 {
@@ -14,7 +18,7 @@ class BackingRequestController extends Controller
     public function index()
     {
         $backingRequests = BackingRequest::with('user')->orderBy('id', 'asc')->get();
-        return response()->json(['backingRequests' => $backingRequests], 200);
+        return response()->json(['backingRequests' => BackingRequestResource::collection($backingRequests)], 200);
     }
 
     public function indexByUser(string $user){
@@ -24,28 +28,32 @@ class BackingRequestController extends Controller
         }
 
         $user->load('backingRequests');
-        return response()->json(['backingRequests'=>$user],200);
+        return response()->json(['backingRequests'=>$user->backingRequests],200);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(BackingRequestStoreRequest $request)
     {
-        $backingRequest = BackingRequest::create($request->all());
-
-        return response()->json(['backingRequest' => $backingRequest], 201);
+        $backingRequest = BackingRequest::create($request->except('state'));
+       
+        $backingRequest->load('user');
+        return response()->json(['backingRequest' => new BackingRequestResource($backingRequest)], 201);
     }
 
     public function approve(Request $request, BackingRequest $backingRequest)
     {
-        $backingRequest->update(['state' => 'approved']);
-        return response()->json(['backingRequest' => $backingRequest], 200);
+        $backingRequest->state = 'approved';
+        $backingRequest->save();
+        return response()->json(['backingRequest' => new BackingRequestResource($backingRequest)], 200);
     }
+
     public function reject(Request $request, BackingRequest $backingRequest)
     {
-        $backingRequest->update(['state' => 'rejected']);
-        return response()->json(['backingRequest' => $backingRequest], 200);
+        $backingRequest->state = 'rejected';
+        $backingRequest->save();
+        return response()->json(['backingRequest' => new BackingRequestResource($backingRequest)], 200);
     }
 
     /**
@@ -53,18 +61,17 @@ class BackingRequestController extends Controller
      */
     public function show(BackingRequest $backingRequest)
     {
-        $backingRequest->load(['user_id']);
-        return response()->json(['backingRequest' => $backingRequest], 200);
+        $backingRequest->load(['user']);
+        return response()->json(['backingRequest' => new BackingRequestResource($backingRequest)], 200);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, BackingRequest $backingRequest)
+    public function update(BackingRequestUpdateRequest $request, BackingRequest $backingRequest)
     {
-        $backingRequest->update($request->all());
-
-        return response()->json(['backingRequest' => $backingRequest], 200);
+        $backingRequest->update($request->except(['state', 'user_id']));
+        return response()->json(['backingRequest' => new BackingRequestResource($backingRequest)], 200);
 
     }
 

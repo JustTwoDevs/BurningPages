@@ -172,7 +172,6 @@ class BookController extends Controller
 
         $book->load(['authors', 'genres', 'bookSagas']);
         return response()->json(['book' => new BookResource($book)], 200);
-
     }
 
     /**
