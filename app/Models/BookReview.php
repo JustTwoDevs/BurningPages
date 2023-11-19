@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class BookReview extends Model
 {
     use HasFactory;
-    
+
     protected $table = 'bookReviews';
 
     protected $fillable = [
@@ -23,11 +23,12 @@ class BookReview extends Model
     {
         return $this->belongsTo(Book::class, 'book_id');
     }
-    public function user(){
-        return $this->belongsTo(User::class, 'user_id');
+    public function user()
+    {
+        return $this->belongsTo(RegisteredUser::class, 'user_id');
     }
-    public function reviewRate(){
+    public function reviewRate()
+    {
         return $this->hasMany(ReviewRate::class, 'bookReview_id');
     }
-
 }

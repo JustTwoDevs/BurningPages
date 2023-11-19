@@ -16,7 +16,7 @@ return new class extends Migration
             $table->enum('state', ['pending', 'approved', 'rejected'])->nullable(false);
             $table->text('content')->nullable(false);
             $table->foreignId('user_id')->nullable(false);
-            $table->foreign('user_id')->references('id')->on('users')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreign('user_id')->references('id')->on('registeredUsers')->cascadeOnUpdate()->cascadeOnDelete();
             $table->timestamps();
         });
     }

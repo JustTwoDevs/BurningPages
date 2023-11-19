@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('bookReview_id')->nullable(false);
             $table->foreign('bookReview_id')->references('id')->on('bookReviews');
             $table->foreignId('user_id')->nullable(false);
-            $table->foreign('user_id')->references('id')->on('users')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreign('user_id')->references('id')->on('registeredUsers')->cascadeOnUpdate()->cascadeOnDelete();
             $table->binary('value')->nullable(true);
             $table->timestamps();
         });

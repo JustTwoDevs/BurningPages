@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 
@@ -24,7 +23,8 @@ class DatabaseSeeder extends Seeder
             NationalitySeeder::class,
             AuthorSeeder::class,
             BookSeeder::class,
-            UserSeeder::class,
+            AdminUserSeeder::class,
+            RegisteredUserSeeder::class,
             GenreSeeder::class,
             BookGenresSeeder::class,
             BookWritersSeeder::class,
@@ -33,7 +33,7 @@ class DatabaseSeeder extends Seeder
             BookReviewSeeder::class,
             BookSagaReviewSeeder::class,
             ReviewRateSeeder::class,
-           SagaReviewRateSeeder::class,
+            SagaReviewRateSeeder::class,
             BackingRequestSeeder::class,
         ]);
     }

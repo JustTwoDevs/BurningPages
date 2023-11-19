@@ -36,7 +36,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
  * 5. Name, lastname, pseudonym -> Authors
  * 6. Nacionalidad -> Authors
  * 7. Autor -> Books, BookSagas
- * 
+ *
  * Ordenar por:
  * 1. Valoración de las reseñas en burningmeter y readerScore -> Books, BookSagas
  * 2. Fecha de publicación -> Books
@@ -95,12 +95,12 @@ Route::delete('v1/bookSagas/{bookSaga}/books/{book}', [BookSagaController::class
 /**
  * Reseñas
  * 1. Obtener todas las reseñas de un usuario
- * 2. Obtener todos las reseñas de un libro  
+ * 2. Obtener todos las reseñas de un libro
  * 3. Obtener todas las reseñas de una saga
  */
 
 
 /**
- * Solicitudes de aval 
- * 1. Obtener todas las solicitudes de aval de un usuario 
+ * Solicitudes de aval
+ * 1. Obtener todas las solicitudes de aval de un usuario
  */

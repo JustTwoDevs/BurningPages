@@ -18,15 +18,17 @@ class BookSagaReview extends Model
         'bookSaga_id',
     ];
 
-    
+
     public function bookSaga()
     {
         return $this->belongsTo(BookSaga::class, 'bookSaga_id');
     }
-    public function user(){
-        return $this->belongsTo(User::class, 'user_id');
+    public function user()
+    {
+        return $this->belongsTo(RegisteredUser::class, 'user_id');
     }
-    public function reviewSagaRate(){
+    public function reviewSagaRate()
+    {
         return $this->hasMany(SagaReviewRate::class, 'bookSagaReview_id');
     }
 }

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('sagaReviewRates', function (Blueprint $table) {
             $table->primary(['user_id', 'bookSagaReview_id']);
             $table->foreignId('user_id')->nullable(false);
-            $table->foreign('user_id')->references('id')->on('users')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreign('user_id')->references('id')->on('registeredUsers')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('bookSagaReview_id')->nullable(false);
             $table->foreign('bookSagaReview_id')->references('id')->on('bookSagaReviews');
             $table->binary('value')->nullable(true);

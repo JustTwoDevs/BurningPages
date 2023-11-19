@@ -16,7 +16,8 @@ class backingRequest extends Model
         'user_id',
     ];
 
-    public function user(){
-        return $this->belongsTo(User::class, 'user_id');
+    public function user()
+    {
+        return $this->belongsTo(RegisteredUser::class, 'user_id');
     }
 }
