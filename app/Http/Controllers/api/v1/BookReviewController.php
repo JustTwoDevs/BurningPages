@@ -8,6 +8,9 @@ use App\Models\Book;
 use App\Models\User;
 use App\Models\ReviewRate;
 use Illuminate\Http\Request;
+use App\Http\Requests\api\v1\ReviewStoreRequest;
+use App\Http\Requests\api\v1\ReviewUpdateRequest;
+use App\Http\Resources\api\ReviewResource;
 
 class BookReviewController extends Controller
 {
@@ -18,7 +21,7 @@ class BookReviewController extends Controller
     {
         $bookReviews = BookReview::with('book', 'user', 'reviewRates')->orderBy('id', 'asc')->get();
 
-        return response()->json(['bookReviews' => $bookReviews], 200);
+        return response()->json(['bookReviews' => ReviewResource::collection($bookReviews)], 200);
     }
 
     public function indexByUser(string $user){
@@ -46,10 +49,12 @@ class BookReviewController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(ReviewStoreRequest $request)
     {
-        $bookReview = BookReview::create($request->all());
-        return response()->json(['backingRequest' => $bookReview], 201);
+        $bookReview = BookReview::create($request->except('state'));
+        $bookReview->load(['reviewRates', 'book', 'user']);
+        
+        return response()->json(['bookReview' => new ReviewResource($bookReview)], 201);
     }
 
     /**
@@ -58,40 +63,35 @@ class BookReviewController extends Controller
     public function show(BookReview $bookReview)
     {
         $bookReview->load(['reviewRates', 'book', 'user']);
-        return response()->json(['bookReview' => $bookReview], 200);
+        return response()->json(['bookReview' => new ReviewResource($bookReview)], 200);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, BookReview $bookReview)
+    public function update(ReviewUpdateRequest $request, BookReview $bookReview)
     {
     
-        $bookReview->update($request->except('state'));
+        $bookReview->update($request->except(['state','book_id','user_id']));
 
-        return response()->json(['bookReview' => $bookReview], 200);
+        return response()->json(['bookReview' =>new  ReviewResource($bookReview)], 200);
     }
 
     public function publish(Request $request, BookReview $review)
     {
-        $review->update(['state' => 'published']);
-
-        return response()->json(['review' => $review]);
+        $review->state='published';
+        $review->save();
+        return response()->json(['review' =>new ReviewResource($review)]);
     }
 
     public function occult(Request $request, BookReview $review)
     {
-        $review->update(['state' => 'hidden']);
-
-        return response()->json(['review' => $review]);
+        $review->state='hidden';
+        $review->save();
+        return response()->json(['review' => new ReviewResource($review)]);
     }
 
-    public function addReviewRate(Request $request, string $bookReview, string $reviewRate)
-    {
-        $bookReview = BookReview::find($bookReview);
-        $bookReview->reviewRates()->attach($reviewRate);
-        return response()->json(['bookReview' => $bookReview], 201);
-    }
+   
 
     /**
      * Remove the specified resource from storage.

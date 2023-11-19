@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\ReviewRate;
 use Illuminate\Http\Request;
 use App\Models\BookReview;
+use App\Http\Requests\api\v1\ReviewRatesStoreRequest;
+use App\Http\Requests\api\v1\ReviewRatesUpdateRequest;
+use App\Http\Resources\api\ReviewRateResource;
 
 class ReviewRateController extends Controller
 {
@@ -13,7 +16,7 @@ class ReviewRateController extends Controller
     {
      $reviewRates = ReviewRate::with('user', 'bookReview')->orderBy('user_id', 'asc')->orderBy('bookReview_id', 'asc')->get();
 
-    return response()->json(['reviewRates' => $reviewRates], 200);
+    return response()->json(['reviewRates' => ReviewRateResource::collection($reviewRates)], 200);
     }
 
     public function indexByReview(string $review){
@@ -30,29 +33,32 @@ class ReviewRateController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(ReviewRatesStoreRequest $request)
     {
         $ReviewRate = ReviewRate::create($request->all());
-        return response()->json(['ReviewRate' => $ReviewRate], 201);
+        $ReviewRate->load('user', 'bookReview');
+        return response()->json(['ReviewRate' => new ReviewRateResource($ReviewRate)], 201);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(ReviewRate $ReviewRate)
+    public function show(ReviewRate $reviewRate)
     {
-        return response()->json(['ReviewRate' => $ReviewRate], 200);
+        $reviewRate->load('user', 'bookReview');
+        return response()->json(['ReviewRate' => new ReviewRateResource($reviewRate)], 200);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, ReviewRate $ReviewRate)
+    public function update(ReviewRatesUpdateRequest $request, ReviewRate $reviewRate)
     {
     
-        $ReviewRate->update($request->all());
+        $reviewRate->update($request->all());
+        $reviewRate->load('user', 'bookReview');
 
-        return response()->json(['ReviewRate' => $ReviewRate], 200);
+        return response()->json(['ReviewRate' => new ReviewRateResource($reviewRate)], 200);
     }
 
     /**
