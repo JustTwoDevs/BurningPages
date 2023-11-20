@@ -26,7 +26,7 @@ class UserUpdateRequest extends FormRequest
             'lastname' => 'string|alpha:ascii|max:255|min:1',
             'username' => 'string|alpha_dash:ascii|max:80|min:7|unique:users,username',
             'email' => 'email|min:8|max:255|unique:users,email',
-            'nationality' => 'exists:nationalities,id',
+            'nationality_id' => 'exists:nationalities,id',
             'birthdate' => 'date_format:Y-m-d',
             'password' => 'missing',
         ];
@@ -51,7 +51,7 @@ class UserUpdateRequest extends FormRequest
             'email.min' => 'El correo electronico debe contener al menos 8 caracteres',
             'email.max' => 'El correo electronico debe contener menos de 255 caracteres',
             'email.unique' => 'El correo electronico ya esta en uso',
-            'nationality.exists' => 'La nacionalidad no existe',
+            'nationality_id.exists' => 'La nacionalidad no existe',
             'birthdate.date' => 'La fecha de nacimiento debe tener un formato valido',
             'password.missing' => 'La contraseña no puede ser actualizada desde este recurso',
         ];

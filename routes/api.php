@@ -27,47 +27,55 @@ use App\Http\Controllers\api\v1\AuthController;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
 /*
  * Rutas de usuarios.
  */
 
-
-// Rutas a las que solo puede acceder el admin.
-Route::get("v1/users", [UserController::class, 'index']);
-Route::get("v1/users/{userId}", [UserController::class, 'show']);
-Route::put("v1/users/{userId}", [UserController::class, 'update']);
-Route::get("v1/adminUsers", [AdminUserController::class, 'index']);
-Route::get("v1/adminUsers/{userId}", [AdminUserController::class, 'show']);
-Route::post("v1/adminUsers", [AdminUserController::class, 'store']);
-Route::put("v1/adminUsers/{userId}", [AdminUserController::class, 'update']);
-Route::delete("v1/adminUsers/{userId}", [AdminUserController::class, 'destroy']);
-
 // Rutas publicas.
-Route::get("v1/profiles", [RegisteredUserController::class, 'index']);
-Route::get("v1/profiles/{userId}", [RegisteredUserController::class, 'show']);
+Route::get("v1/profiles", [RegisteredUserController::class, 'getProfiles']);
+Route::get("v1/profiles/{userId}", [RegisteredUserController::class, 'getProfile']);
 Route::post("v1/register", [RegisteredUserController::class, 'store']);
 Route::post("v1/login", [AuthController::class, 'login']);
 
-// Rutas a las que solo puede acceder el usuario registrado.
 Route::middleware(['auth:sanctum'])->group(function () {
-    Route::get("v1/myprofile", [RegisteredUserController::class, 'getMyProfile']);
-    Route::put("v1/myprofile", [RegisteredUserController::class, 'updateMyProfile']);
-    Route::put("v1/myprofile/password", [RegisteredUserController::class, 'updateMyPassword']);
-    Route::delete("v1/myprofile", [RegisteredUserController::class, 'deleteMyProfile']);
+
+    // Rutas a las que solo puede acceder el admin.
+    Route::middleware('can:admin')->group(function () {
+        Route::get("v1/users", [UserController::class, 'index']);
+        Route::get("v1/users/{userId}", [UserController::class, 'show']);
+        Route::put("v1/users/{userId}", [UserController::class, 'update']);
+        Route::get("v1/adminUsers", [AdminUserController::class, 'index']);
+        Route::get("v1/adminUsers/{userId}", [AdminUserController::class, 'show']);
+        Route::post("v1/adminUsers", [AdminUserController::class, 'store']);
+        Route::put("v1/adminUsers/{userId}", [AdminUserController::class, 'update']);
+        Route::delete("v1/adminUsers/{userId}", [AdminUserController::class, 'destroy']);
+        //
+
+    });
+
+    // Rutas a las que solo puede acceder el usuario registrado.
+    Route::middleware('can:registeredUser')->group(function () {
+        Route::get("v1/myprofile", [RegisteredUserController::class, 'getMyProfile']);
+        Route::put("v1/myprofile", [RegisteredUserController::class, 'updateMyProfile']);
+        Route::put("v1/myprofile/password", [RegisteredUserController::class, 'updateMyPassword']);
+        Route::delete("v1/myprofile", [RegisteredUserController::class, 'deleteMyProfile']);
+        //
+    });
+
+    // Rutas a las que puede acceder el usuario administrador.
+    Route::middleware('can:adminUser')->group(function () {
+        Route::get("v1/registeredUsers", [RegisteredUserController::class, 'index']);
+        Route::get("v1/registeredUsers/{userId}", [RegisteredUserController::class, 'show']);
+        Route::put("v1/registeredUsers/{userId}", [RegisteredUserController::class, 'update']);
+        Route::delete("v1/registeredUsers/{userId}", [RegisteredUserController::class, 'destroy']);
+    });
+
+    // Rutas a las que puede acceder cualquier usuario.
+    Route::post("v1/logout", [AuthController::class, 'logout']);
 });
 
-// Rutas a las que puede acceder el usuario administrador.
-Route::get("v1/registeredUsers", [RegisteredUserController::class, 'index']);
-Route::get("v1/registeredUsers/{userId}", [RegisteredUserController::class, 'show']);
-Route::put("v1/registeredUsers/{userId}", [RegisteredUserController::class, 'update']);
-Route::delete("v1/registeredUsers/{userId}", [RegisteredUserController::class, 'destroy']);
 
-// Rutas a las que puede acceder cualquier usuario.
-Route::post("v1/logout", [AuthController::class, 'logout']);
+
 
 
 /**
@@ -116,7 +124,7 @@ Route::delete('v1/authors/{author}/books/{book}', [AuthorController::class, 'rem
  * 2. Obtener todos los libros de una saga
  * 3. Añadir un genero a un libro
  * 4. Remover un genero a un libro
- * 5. Añadir una reseña a un libro 
+ * 5. Añadir una reseña a un libro
  */
 Route::get('v1/authors/{author}/books', [BookController::class, 'indexByAuthor']);
 Route::get('v1/bookSagas/{bookSaga}/books', [BookController::class, 'indexByBookSaga']);
@@ -289,6 +297,7 @@ Route::apiResources([
     "v1/reviewRates" => ReviewRateController::class,
     "v1/sagaReviewRates" => SagaReviewRateController::class,
 ]);
+
 
  Route::get('v1/bookReviews/{review}/reviewRates', [ReviewRateController::class, 'indexByReview']);
  Route::get('v1/bookSagaReviews/{review}/reviewRates', [SagaReviewRateController::class, 'indexByReview']);

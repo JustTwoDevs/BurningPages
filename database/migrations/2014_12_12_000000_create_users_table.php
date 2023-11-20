@@ -19,8 +19,8 @@ return new class extends Migration
             $table->string('email', 255)->unique()->nullable(false);
             $table->string('password', 255)->nullable(false);
             $table->date('birthdate')->nullable(false);
-            $table->foreignId('nationality');
-            $table->foreign('nationality')->references('id')->on('nationalities')->restrictOnUpdate()->restrictOnDelete();
+            $table->foreignId('nationality_id');
+            $table->foreign('nationality_id')->references('id')->on('nationalities')->restrictOnUpdate()->restrictOnDelete();
             $table->rememberToken();
             $table->timestamps();
         });

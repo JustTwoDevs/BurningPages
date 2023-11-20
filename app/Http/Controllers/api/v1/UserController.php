@@ -17,14 +17,14 @@ class UserController extends Controller
     public function index()
     {
         $query = request()->query();
-        $users = User::query()->with('nationality')->get();
+        $users = User::query()->with('nationality');
 
         /**
          * Filtrar por nombre.
          */
         if (isset($query['name'])) {
             $search = str_replace('-', ' ', $query['name']);
-            $users = $users->where('user.name', 'like', '%' . $search . '%');
+            $users = $users->where('name', 'like', '%' . $search . '%');
         }
 
         /**
@@ -32,7 +32,7 @@ class UserController extends Controller
          */
         if (isset($query['lastname'])) {
             $search = str_replace('-', ' ', $query['lastname']);
-            $users = $users->where('lastname', $search);
+            $users = $users->where('lastname', 'like', '%' . $search . '%');
         }
 
 
@@ -40,30 +40,40 @@ class UserController extends Controller
          * Filtrar por nacionalidad.
          */
         if (isset($query['nationality'])) {
-            $users = $users->where('nationality', $query['nationality']);
+            $users = $users->whereHas('nationality', function ($q) use ($query) {
+                $q->where('name', 'like', '%' . $query['nationality'] . '%');
+            });
         }
 
         /**
          * Filtrar por username.
          */
         if (isset($query['username'])) {
-            $users = $users->where('username', $query['username']);
+            $search = str_replace('-', ' ', $query['username']);
+            $users = $users->where('username', 'like', '%' . $search . '%');
         }
 
         /**
          * Filtrar por email.
          */
         if (isset($query['email'])) {
-            $users = $users->where('email', $query['email']);
+            $search = str_replace('-', ' ', $query['email']);
+            $users = $users->where('email', 'like', '%' . $search . '%');
         }
-
         /**
-         * Ordenar.
+         * Ordenamientos.
+         * orderBy - Agrega una clausula order by a la consulta
+         *    orderBy('columna', 'asc|desc')
          */
         if (isset($query['sortBy'])) {
-            $users = $users->orderBy($query['sortBy'], $query['order'] ?? 'asc');
+
+            if ($query['sortBy'] == 'name') {
+                $users = $users->orderBy('name', $query['sortOrder'] ?? 'desc');
+            }
         }
 
+
+        $users = $users->get();
         return response()->json(['users' => $users]);
     }
 

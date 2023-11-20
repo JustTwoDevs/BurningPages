@@ -16,43 +16,81 @@ class AdminUserController extends Controller
     public function index()
     {
         $query = request()->query();
-        $users = AdminUser::query()->with('user.nationality')->get();
+        $users = AdminUser::query()->with('user.nationality');
 
         /**
          * Filtrar por nombre.
          */
         if (isset($query['name'])) {
             $search = str_replace('-', ' ', $query['name']);
-            $users = $users->where('concat(user.name, " ", lastname) like ?', '%' . $search . '%');
+            $users = $users->whereHas('user', function ($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%');
+            });
         }
+
+        /**
+         * Filtrar por apellido.
+         */
+        if (isset($query['lastname'])) {
+            $search = str_replace('-', ' ', $query['lastname']);
+            $users = $users->whereHas('user', function ($q) use ($search) {
+                $q->where('lastname', 'like', '%' . $search . '%');
+            });
+        }
+
+
         /**
          * Filtrar por nacionalidad.
          */
         if (isset($query['nationality'])) {
-            $users = $users->where('nationality', $query['nationality']);
+            $users = $users->whereHas('user', function ($q) use ($query) {
+                $q->whereHas('nationality', function ($q) use ($query) {
+                    $q->where('name', 'like', '%' . $query['nationality'] . '%');
+                });
+            });
         }
 
         /**
          * Filtrar por username.
          */
         if (isset($query['username'])) {
-            $users = $users->where('username', $query['username']);
+            $search = str_replace('-', ' ', $query['username']);
+            $users = $users->whereHas(
+                'user',
+                function ($q) use ($search) {
+                    $q->where('username', 'like', '%' . $search . '%');
+                }
+            );
         }
 
         /**
          * Filtrar por email.
          */
         if (isset($query['email'])) {
-            $users = $users->where('email', $query['email']);
+            $search = str_replace('-', ' ', $query['email']);
+            $users = $users->whereHas(
+                'user',
+                function ($q) use ($search) {
+                    $q->where('email', 'like', '%' . $search . '%');
+                }
+            );
         }
-
         /**
-         * Ordenar.
+         * Ordenamientos.
+         * orderBy - Agrega una clausula order by a la consulta
+         *    orderBy('columna', 'asc|desc')
          */
         if (isset($query['sortBy'])) {
-            $users = $users->orderBy($query['sortBy'], $query['order'] ?? 'asc');
+
+            if ($query['sortBy'] == 'name') {
+                $users = $users->whereHas('user', function ($q) use ($query) {
+                    $q->orderBy('name', $query['order'] ?? 'asc');
+                });
+            }
         }
 
+
+        $users = $users->get();
         return response()->json(['adminUsers' => $users]);
     }
 
@@ -99,11 +137,11 @@ class AdminUserController extends Controller
      */
     public function destroy(string $userId)
     {
-        $adminUser = AdminUser::query()->find($userId);
+        $adminUser = AdminUser::query()->whereKey($userId)->with('user')->first();
         if (!$adminUser) {
             return response()->json(['message' => 'Admin user not found'], 404);
         }
-        $adminUser->delete();
-        return response()->json(['adminUser' => $adminUser]);
+        $adminUser->user->delete();
+        return response()->json(['message' => 'Admin user deleted successfully']);
     }
 }
