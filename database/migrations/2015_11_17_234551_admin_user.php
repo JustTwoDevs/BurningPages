@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('adminUsers', function (Blueprint $table) {
             $table->id()->autoincrement();
             $table->foreignId('user_id')->unique()->nullable(false);
-            $table->foreign('user_id')->references('id')->on('users')->cascadeOnUpdate()->restrictOnDelete();
+            $table->foreign('user_id')->references('id')->on('users')->cascadeOnUpdate()->cascadeOnDelete();
         });
     }
 

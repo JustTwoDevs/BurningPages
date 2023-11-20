@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('nationalities', function (Blueprint $table) {
             $table->id()->autoIncrement();
             $table->string('name');
-            $table->timestamps();
         });
     }
 

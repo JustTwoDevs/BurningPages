@@ -16,7 +16,7 @@ class Nationality extends Model
         'name',
     ];
 
-     public function author(): HasMany
+    public function author(): HasMany
     {
         return $this->hasMany(Author::class, 'nationality_id');
     }

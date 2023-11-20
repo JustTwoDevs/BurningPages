@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('registeredUsers', function (Blueprint $table) {
             $table->id()->autoIncrement();
             $table->foreignId('user_id')->unique()->nullable(false);
-            $table->foreign('user_id')->references('id')->on('users')->cascadeOnUpdate()->restrictOnDelete();
-            $table->enum('rank', ['bronze', 'silver', 'gold'])->nullable(false);
-            $table->boolean('verified')->nullable(false);
+            $table->foreign('user_id')->references('id')->on('users')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->enum('rank', ['bronze', 'silver', 'gold'])->default('bronze')->nullable(false);
+            $table->boolean('verified')->default(false)->nullable(false);
         });
     }
 

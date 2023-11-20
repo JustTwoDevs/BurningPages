@@ -17,7 +17,7 @@ class BookSagaController extends Controller
      * Obtener todas las sagas.
      * Es posible filtrar por generos, nombre y autor.
      * Es posible ordenar por valoración de las reseñas en burningmeter y readerScore.
-     * 
+     *
      * Ejemplos:
      * /bookSagas?genres=fantasy,romance
      * /bookSagas?name=Harry-Potter

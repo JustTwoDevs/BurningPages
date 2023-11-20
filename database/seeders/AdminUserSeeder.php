@@ -21,7 +21,8 @@ class AdminUserSeeder extends Seeder
             'password' => 'hola123',
             'birthdate' => '1999-04-19',
             'nationality' => 1,
-
+            'created_at' => '2021-04-19 00:00:00',
+            'updated_at' => '2021-04-19 00:00:00',
         ]);
         DB::table('users')->insert([
             'name' => 'tomas',
@@ -31,6 +32,8 @@ class AdminUserSeeder extends Seeder
             'password' => 'hola123',
             'birthdate' => '1999-04-19',
             'nationality' => 1,
+            'created_at' => '2021-04-19 00:00:00',
+            'updated_at' => '2021-04-19 00:00:00',
         ]);
 
         DB::table('users')->insert([
@@ -41,6 +44,8 @@ class AdminUserSeeder extends Seeder
             'password' => 'hola123',
             'birthdate' => '1999-04-19',
             'nationality' => 1,
+            'created_at' => '2021-04-19 00:00:00',
+            'updated_at' => '2021-04-19 00:00:00',
         ]);
 
         DB::table('adminUsers')->insert([

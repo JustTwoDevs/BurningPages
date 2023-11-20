@@ -26,6 +26,8 @@ class UserFactory extends Factory
             'password' => '123',
             'birthdate' => fake()->date(),
             'nationality' => fake()->numberBetween(1, 5),
+            'created_at' => fake()->dateTime(),
+            'updated_at' => fake()->dateTime(),
         ];
     }
 }

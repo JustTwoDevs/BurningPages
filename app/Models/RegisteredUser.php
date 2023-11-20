@@ -11,6 +11,12 @@ class RegisteredUser extends Model
     protected $table = 'registeredUsers';
     public $timestamps = false;
 
+    protected $fillable = [
+        'rank',
+        'user_id',
+        'verified',
+    ];
+
     public function bookReviews()
     {
         return $this->hasMany(Review::class, 'user_id');
@@ -30,5 +36,10 @@ class RegisteredUser extends Model
     public function backingRequests()
     {
         return $this->hasMany(BackingRequest::class, 'user_id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

@@ -11,6 +11,10 @@ use App\Http\Controllers\api\v1\BookSagaReviewController;
 use App\Http\Controllers\api\v1\ReviewRateController;
 use App\Http\Controllers\api\v1\SagaReviewRateController;
 use App\Http\Controllers\api\v1\BackingRequestController;
+use App\Http\Controllers\api\v1\UserController;
+use App\Http\Controllers\api\v1\RegisteredUserController;
+use App\Http\Controllers\api\v1\AdminUserController;
+use App\Http\Controllers\api\v1\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,6 +30,45 @@ use App\Http\Controllers\api\v1\BackingRequestController;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+/*
+ * Rutas de usuarios.
+ */
+
+
+// Rutas a las que solo puede acceder el admin.
+Route::get("v1/users", [UserController::class, 'index']);
+Route::get("v1/users/{userId}", [UserController::class, 'show']);
+Route::put("v1/users/{userId}", [UserController::class, 'update']);
+Route::get("v1/adminUsers", [AdminUserController::class, 'index']);
+Route::get("v1/adminUsers/{userId}", [AdminUserController::class, 'show']);
+Route::post("v1/adminUsers", [AdminUserController::class, 'store']);
+Route::put("v1/adminUsers/{userId}", [AdminUserController::class, 'update']);
+Route::delete("v1/adminUsers/{userId}", [AdminUserController::class, 'destroy']);
+
+// Rutas publicas.
+Route::get("v1/profiles", [RegisteredUserController::class, 'index']);
+Route::get("v1/profiles/{userId}", [RegisteredUserController::class, 'show']);
+Route::post("v1/register", [RegisteredUserController::class, 'store']);
+Route::post("v1/login", [AuthController::class, 'login']);
+
+// Rutas a las que solo puede acceder el usuario registrado.
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::get("v1/myprofile", [RegisteredUserController::class, 'getMyProfile']);
+    Route::put("v1/myprofile", [RegisteredUserController::class, 'updateMyProfile']);
+    Route::put("v1/myprofile/password", [RegisteredUserController::class, 'updateMyPassword']);
+    Route::delete("v1/myprofile", [RegisteredUserController::class, 'deleteMyProfile']);
+});
+
+// Rutas a las que puede acceder el usuario administrador.
+Route::get("v1/registeredUsers", [RegisteredUserController::class, 'index']);
+Route::get("v1/registeredUsers/{userId}", [RegisteredUserController::class, 'show']);
+Route::put("v1/registeredUsers/{userId}", [RegisteredUserController::class, 'update']);
+Route::delete("v1/registeredUsers/{userId}", [RegisteredUserController::class, 'destroy']);
+
+// Rutas a las que puede acceder cualquier usuario.
+Route::post("v1/logout", [AuthController::class, 'logout']);
+
 
 /**
  * Filtros:
