@@ -99,6 +99,17 @@ class BookSagaController extends Controller
         return response()->json(['bookSagas' => BookSagaResource::collection($bookSagas)], 200);
     }
 
+    public function indexByUser(Request $request, string $user){
+        $user=RegisteredUser::find($user);
+        if(!$user){
+            return response()->json(['message'=>'user not found'],404);
+        }
+
+        $user->load('reviews');
+        return response()->json(['reviews'=>$user->reviews],200);
+
+    }
+
     /**
      * Crear una nueva saga.
      */

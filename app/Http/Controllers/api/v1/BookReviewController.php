@@ -5,7 +5,7 @@ namespace App\Http\Controllers\api\v1;
 use App\Http\Controllers\Controller;
 use App\Models\BookReview;
 use App\Models\Book;
-use App\Models\User;
+use App\Models\RegisteredUser;
 use App\Models\ReviewRate;
 use Illuminate\Http\Request;
 use App\Http\Requests\api\v1\ReviewStoreRequest;
@@ -17,22 +17,46 @@ class BookReviewController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function registeredIndex()
     {
         $bookReviews = BookReview::with('book', 'user', 'reviewRates')->orderBy('id', 'asc')->get();
 
         return response()->json(['bookReviews' => ReviewResource::collection($bookReviews)], 200);
     }
 
-    public function indexByUser(string $user){
-        $user=User::find($user);
+    public function index()
+    {
+        $bookReviews = BookReview::with('book', 'user', 'reviewRates')->orderBy('id', 'asc')->get();
+        $publishedReviews = $bookReviews->filter(function ($review) {
+            return $review->state === 'published'; 
+        });
+        return response()->json(['bookReviews' => ReviewResource::collection($publishedReviews)], 200);
+    }
+
+    public function indexByUserRegistered(Request $request, string $user){
+        $user=RegisteredUser::find($user);
         if(!$user){
             return response()->json(['message'=>'user not found'],404);
         }
 
-        $user->load('reviews');
-        return response()->json(['reviews'=>$user->reviews],200);
+        $user->load('reviews.book','reviews.user');
 
+        return response()->json(['reviews'=>$user->reviews],200);
+    }
+
+    public function indexByUser(Request $request, string $user){
+        $user=RegisteredUser::find($user);
+        if(!$user){
+            return response()->json(['message'=>'user not found'],404);
+        }
+
+        $user->load('reviews.book','reviews.user');
+
+        $publishedReviews = $user->reviews->filter(function ($review) {
+            return $review->state === 'published'; 
+        });
+
+        return response()->json(['reviews'=>$publishedReviews],200);
     }
 
     public function indexByBook(Request $request,string $book){
@@ -43,6 +67,22 @@ class BookReviewController extends Controller
         }
 
         $book->load('reviews');
+        $publishedReviews = $user->reviews->filter(function ($review) {
+            return $review->state === 'published'; 
+        });
+        return response()->json(['reviews'=>$publishedReviews],200);
+
+    }
+
+    public function indexByBookRegistered(Request $request,string $book){
+    
+        $book=Book::find($book);
+        if(!$book){
+            return response()->json(['message'=>'book not found'],404);
+        }
+
+        $book->load('reviews');
+       
         return response()->json(['reviews'=>$book->reviews],200);
 
     }
@@ -63,6 +103,15 @@ class BookReviewController extends Controller
     public function show(BookReview $bookReview)
     {
         $bookReview->load(['reviewRates', 'book', 'user']);
+        if($bookReview->state==='published'){
+            return response()->json(['bookReview' => new ReviewResource($bookReview)], 200);
+        } 
+        return response()->json(['review not found'], 404);
+    }
+
+    public function showRegistered(BookReview $bookReview)
+    {
+        $bookReview->load(['reviewRates', 'book', 'user']);
         return response()->json(['bookReview' => new ReviewResource($bookReview)], 200);
     }
 
@@ -73,22 +122,43 @@ class BookReviewController extends Controller
     {
     
         $bookReview->update($request->except(['state','book_id','user_id']));
+        $bookReview->load(['reviewRates', 'book', 'user']);
 
         return response()->json(['bookReview' =>new  ReviewResource($bookReview)], 200);
     }
 
-    public function publish(Request $request, BookReview $review)
+    public function publishAdmin(Request $request, BookReview $review)
     {
-        $review->state='published';
-        $review->save();
-        return response()->json(['review' =>new ReviewResource($review)]);
+        if($review->state==='occult'){
+            $review->state='published';
+            $review->save();
+            return response()->json(['review' =>new ReviewResource($review)]);
+        }
+        return response()->json(['message'=>'review is not occult'],400);
+
+       
+    }
+
+    public function publishRegistered(Request $request, BookReview $review)
+    {
+        if($review->state==='draft'){
+            $review->state='published';
+            $review->save();
+            return response()->json(['review' =>new ReviewResource($review)]);
+        }
+        return response()->json(['message'=>'review is not a draft'],400);
+
     }
 
     public function occult(Request $request, BookReview $review)
     {
-        $review->state='hidden';
-        $review->save();
-        return response()->json(['review' => new ReviewResource($review)]);
+        if($review->state==='published'){
+            $review->state='hidden';
+            $review->save();
+            return response()->json(['review' => new ReviewResource($review)]);
+        } 
+        return response()->json(['message'=>'review is not published'],400);
+       
     }
 
    
