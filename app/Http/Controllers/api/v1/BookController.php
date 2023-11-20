@@ -17,7 +17,7 @@ class BookController extends Controller
      * Display a listing of the resource.
      * Es posible filtrar por género, rango de fecha de publicación, idioma original, titulo y autor (Nombre, apellido, pseudónimo).
      * Es posible ordenar por valoración de las reseñas en burningmeter y readerScore, y por fecha de publicación.
-     * 
+     *
      * Ejemplos:
      * /books?genres=novel,romance
      * /books?range=2010-01-01,2020-01-01

@@ -7,6 +7,7 @@ use App\Http\Requests\api\v1\UserStoreRequest;
 use App\Http\Requests\api\v1\UserUpdateRequest;
 use Illuminate\Http\Request;
 use App\Http\Requests\api\v1\UpdateMyPasswordRequest;
+use App\Http\Resources\api\ProfileResource;
 use App\Models\RegisteredUser;
 use App\Models\User;
 
@@ -18,73 +19,193 @@ class RegisteredUserController extends Controller
     public function index()
     {
         $query = request()->query();
-        $users = RegisteredUser::query()->with('user.nationality')->get();
+        $users = RegisteredUser::query()->with('user.nationality');
 
         /**
          * Filtrar por nombre.
          */
         if (isset($query['name'])) {
             $search = str_replace('-', ' ', $query['name']);
-            $users = $users->where('concat(name, " ", lastname) like ?', '%' . $search . '%');
+            $users = $users->whereHas('user', function ($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%');
+            });
         }
+
+        /**
+         * Filtrar por apellido.
+         */
+        if (isset($query['lastname'])) {
+            $search = str_replace('-', ' ', $query['lastname']);
+            $users = $users->whereHas('user', function ($q) use ($search) {
+                $q->where('lastname', 'like', '%' . $search . '%');
+            });
+        }
+
+
         /**
          * Filtrar por nacionalidad.
          */
         if (isset($query['nationality'])) {
-            $users = $users->where('user.nationality', $query['nationality']);
-        }
-
-        /**
-         * Filtrar por fecha de nacimiento.
-         */
-        if (isset($query['birthdate'])) {
-            $users = $users->where('birthdate', $query['birthdate']);
+            $users = $users->whereHas('user', function ($q) use ($query) {
+                $q->whereHas('nationality', function ($q) use ($query) {
+                    $q->where('name', 'like', '%' . $query['nationality'] . '%');
+                });
+            });
         }
 
         /**
          * Filtrar por username.
          */
         if (isset($query['username'])) {
-            $users = $users->where('username', $query['username']);
+            $search = str_replace('-', ' ', $query['username']);
+            $users = $users->whereHas(
+                'user',
+                function ($q) use ($search) {
+                    $q->where('username', 'like', '%' . $search . '%');
+                }
+            );
         }
 
         /**
          * Filtrar por email.
          */
         if (isset($query['email'])) {
-            $users = $users->where('email', $query['email']);
+            $search = str_replace('-', ' ', $query['email']);
+            $users = $users->whereHas(
+                'user',
+                function ($q) use ($search) {
+                    $q->where('email', 'like', '%' . $search . '%');
+                }
+            );
         }
 
         /**
-         * Filtrat por rank.
+         * Filtrar por rank.
          */
         if (isset($query['rank'])) {
             $users = $users->where('rank', $query['rank']);
         }
 
         /**
-         * Filtrar por verified.
+         * Filtrar por verificado.
          */
         if (isset($query['verified'])) {
             $users = $users->where('verified', $query['verified']);
         }
 
         /**
-         * Ordenar.
+         * Ordenamientos.
+         * orderBy - Agrega una clausula order by a la consulta
+         *    orderBy('columna', 'asc|desc')
          */
         if (isset($query['sortBy'])) {
-            $users = $users->orderBy($query['sortBy'], $query['order'] ?? 'asc');
+
+            if ($query['sortBy'] == 'name') {
+                $users = $users->whereHas('user', function ($q) use ($query) {
+                    $q->orderBy('name', $query['order'] ?? 'asc');
+                });
+            }
         }
 
-        /**
-         * ordenar por likes.
-         */
 
+        $users = $users->get();
         return response()->json(['users' => $users]);
     }
 
     public function getProfiles()
     {
+        $query = request()->query();
+        $users = RegisteredUser::query()->with('user.nationality');
+
+        /**
+         * Filtrar por nombre.
+         */
+        if (isset($query['name'])) {
+            $search = str_replace('-', ' ', $query['name']);
+            $users = $users->whereHas('user', function ($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%');
+            });
+        }
+
+        /**
+         * Filtrar por apellido.
+         */
+        if (isset($query['lastname'])) {
+            $search = str_replace('-', ' ', $query['lastname']);
+            $users = $users->whereHas('user', function ($q) use ($search) {
+                $q->where('lastname', 'like', '%' . $search . '%');
+            });
+        }
+
+
+        /**
+         * Filtrar por nacionalidad.
+         */
+        if (isset($query['nationality'])) {
+            $users = $users->whereHas('user', function ($q) use ($query) {
+                $q->whereHas('nationality', function ($q) use ($query) {
+                    $q->where('name', 'like', '%' . $query['nationality'] . '%');
+                });
+            });
+        }
+
+        /**
+         * Filtrar por username.
+         */
+        if (isset($query['username'])) {
+            $search = str_replace('-', ' ', $query['username']);
+            $users = $users->whereHas(
+                'user',
+                function ($q) use ($search) {
+                    $q->where('username', 'like', '%' . $search . '%');
+                }
+            );
+        }
+
+        /**
+         * Filtrar por email.
+         */
+        if (isset($query['email'])) {
+            $search = str_replace('-', ' ', $query['email']);
+            $users = $users->whereHas(
+                'user',
+                function ($q) use ($search) {
+                    $q->where('email', 'like', '%' . $search . '%');
+                }
+            );
+        }
+
+        /**
+         * Filtrar por rank.
+         */
+        if (isset($query['rank'])) {
+            $users = $users->where('rank', $query['rank']);
+        }
+
+        /**
+         * Filtrar por verificado.
+         */
+        if (isset($query['verified'])) {
+            $users = $users->where('verified', $query['verified']);
+        }
+
+        /**
+         * Ordenamientos.
+         * orderBy - Agrega una clausula order by a la consulta
+         *    orderBy('columna', 'asc|desc')
+         */
+        if (isset($query['sortBy'])) {
+
+            if ($query['sortBy'] == 'name') {
+                $users = $users->whereHas('user', function ($q) use ($query) {
+                    $q->orderBy('name', $query['order'] ?? 'asc');
+                });
+            }
+        }
+
+
+        $users = $users->get();
+        return response()->json(['profiles' => ProfileResource::collection($users)]);
     }
 
     /**
@@ -107,6 +228,15 @@ class RegisteredUserController extends Controller
             return response()->json(['error' => 'User not found'], 404);
         }
         return response()->json(['registeredUser' => $registeredUser]);
+    }
+
+    public function getProfile(string $userId)
+    {
+        $profile = RegisteredUser::query()->whereKey($userId)->with('user.nationality')->first();
+        if ($profile == null) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+        return response()->json(['profile' => new ProfileResource($profile)]);
     }
 
     public function getMyProfile()
@@ -163,31 +293,17 @@ class RegisteredUserController extends Controller
      */
     public function destroy(Request $request, string $userId)
     {
-        if ($request->password == null) {
-            return response()->json(['error' => 'Password is required'], 404);
-        }
-        $registeredUser = RegisteredUser::query()->find($userId);
+        $registeredUser = RegisteredUser::query()->whereKey($userId)->with('user')->first();
         if ($registeredUser == null) {
             return response()->json(['error' => 'User not found'], 404);
         }
-        $registeredUser = User::query()->whereKey($registeredUser->id)->where('password', $request->password)->first();
-        if ($registeredUser == null) {
-            return response()->json(['error' => 'Password is incorrect'], 400);
-        }
-        $registeredUser->delete();
+        $registeredUser->user->delete();
         return response()->json(['message' => 'User deleted successfully']);
     }
 
-    public function deleteMyProfile(Request $request)
+    public function deleteMyProfile()
     {
-        if ($request->password == null) {
-            return response()->json(['error' => 'Password is required'], 404);
-        }
         $user = auth()->user();
-        $registeredUser = RegisteredUser::query()->where('user_id', $user['id'])->with('user.nationality')->first();
-        if ($registeredUser->password != $request->password) {
-            return response()->json(['error' => 'Password is incorrect'], 400);
-        }
         $user->delete();
         return response()->json(['message' => 'User deleted successfully']);
     }

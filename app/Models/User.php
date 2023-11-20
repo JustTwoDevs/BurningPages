@@ -25,7 +25,7 @@ class User extends Authenticatable
         'email',
         'password',
         'birthdate',
-        'nationality',
+        'nationality_id',
     ];
 
     /**
@@ -44,12 +44,21 @@ class User extends Authenticatable
      * @var array<string, string>
      */
     protected $casts = [
-        'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
 
     public function nationality(): BelongsTo
     {
-        return $this->belongsTo(Nationality::class, 'nationality');
+        return $this->belongsTo(Nationality::class, 'nationality_id');
+    }
+
+    public function isAdmin(): bool
+    {
+        return AdminUser::query()->where('user_id', $this->id)->exists();
+    }
+
+    public function isRegistered(): bool
+    {
+        return RegisteredUser::query()->where('user_id', $this->id)->exists();
     }
 }
