@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\api\v1\AuthorStoreRequest;
 use App\Http\Requests\api\v1\AuthorUpdateRequest;
 use App\Http\Resources\AuthorResource;
+use Illuminate\Support\Facades\Gate;
 
 class AuthorController extends Controller
 {
@@ -17,7 +18,7 @@ class AuthorController extends Controller
      * Obtener todos los autores.
      * Es posible filtrar por nombre completo, pseudónimo, nacionalidad y género.
      * Es posible ordenar por nombre completo.
-     * 
+     *
      * Ejemplos:
      * /authors?name=J.K-Rowling
      * /authors?pseudonym=Gabo
@@ -115,6 +116,9 @@ class AuthorController extends Controller
      */
     public function store(AuthorStoreRequest $request)
     {
+        if (!Gate::any(['admin', 'adminUser'])) {
+            return response()->json(['message' => 'You do not have permission to create an author'], 403);
+        }
         $author = Author::create($request->all());
         $author->load('nationality');
         return response()->json(['author' => $author], 201);

@@ -280,12 +280,12 @@ class RegisteredUserController extends Controller
         if ($user == null) {
             return response()->json(['error' => 'User not found'], 404);
         }
-        $registeredUser = RegisteredUser::query()->where('user_id', $user['id'])->with('user.nationality')->first();
-        if ($registeredUser->user->password != $request->oldPassword) {
-            return response()->json(['error' => 'Old password is incorrect'], 400);
+        $user = User::query()->whereKey($user['id'])->where('password', $request->oldPassword)->first();
+        if ($user == null) {
+            return response()->json(['error' => 'The old password is incorrect'], 400);
         }
-        $registeredUser->update(['password' => $request->newPassword]);
-        return response()->json(['myProfile' => $registeredUser], 200);
+        $user->update(['password' => $request->newPassword]);
+        return response()->json(['myProfile' => $user], 200);
     }
 
     /**
