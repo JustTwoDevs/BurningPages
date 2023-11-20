@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class User extends Authenticatable
 {
@@ -19,8 +20,12 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'lastname',
+        'username',
         'email',
         'password',
+        'birthdate',
+        'nationality',
     ];
 
     /**
@@ -43,21 +48,8 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    public function bookReviews()
+    public function nationality(): BelongsTo
     {
-        return $this->hasMany(Review::class, 'user_id');
-    }
-    public function reviewRates(){
-        return $this->hasMany(reviewRate::class, 'user_id');
-    }
-    public function bookSagaReviews()
-    {
-        return $this->hasMany(BookSagaReview::class, 'user_id');
-    }
-    public function sagaReviewRates(){
-        return $this->hasMany(SagaReviewRate::class, 'user_id');
-    }
-    public function backingRequests(){
-        return $this->hasMany(BackingRequest::class, 'user_id');
+        return $this->belongsTo(Nationality::class, 'nationality');
     }
 }

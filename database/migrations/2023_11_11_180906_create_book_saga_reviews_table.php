@@ -18,8 +18,8 @@ return new class extends Migration
             $table->foreignId('bookSaga_id')->nullable(false);
             $table->foreign('bookSaga_id')->references('id')->on('bookSagas')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('user_id')->nullable(false);
-            $table->foreign('user_id')->references('id')->on('users')->cascadeOnUpdate()->cascadeOnDelete();
-            $table->enum('state', ['draft', 'published', 'hidden'])->nullable(false)->default('draft');
+            $table->foreign('user_id')->references('id')->on('registeredUsers')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->enum('state', ['draft', 'published', 'hidden'])->nullable(false);
             $table->timestamps();
         });
     }

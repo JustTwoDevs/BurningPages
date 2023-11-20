@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('nationalities', function (Blueprint $table) {
-            $table->id()->autoIncrement();
-            $table->string('name');
-            $table->timestamps();
+        Schema::create('admin', function (Blueprint $table) {
+            $table->id();
+            $table->string('username', 255)->nullable(false);
+            $table->string('password', 255)->nullable(false);
         });
     }
 
@@ -23,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('nationalities');
+        Schema::dropIfExists('admin');
     }
 };

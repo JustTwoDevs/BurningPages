@@ -23,14 +23,16 @@ class BookSagaReview extends Model
         'state' => 'draft',
     ];
 
-    
+
     public function bookSaga()
     {
         return $this->belongsTo(BookSaga::class, 'bookSaga_id');
     }
-    public function user(){
-        return $this->belongsTo(User::class, 'user_id');
+    public function user()
+    {
+        return $this->belongsTo(RegisteredUser::class, 'user_id');
     }
+
     public function reviewSagaRates(){
         return $this->hasMany(SagaReviewRate::class, 'bookSagaReview_id');
     }
