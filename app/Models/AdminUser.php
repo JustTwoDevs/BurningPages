@@ -13,6 +13,7 @@ class AdminUser extends Model
     protected $fillable = [
         'user_id',
     ];
+
     public $timestamps = false;
 
     public function user(): BelongsTo

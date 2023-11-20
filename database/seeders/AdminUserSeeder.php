@@ -2,8 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\AdminUser;
+use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 
 class AdminUserSeeder extends Seeder
 {
@@ -13,7 +14,7 @@ class AdminUserSeeder extends Seeder
     public function run(): void
     {
         // Usuarios administradores
-        DB::table('users')->insert([
+        User::create([
             'name' => 'valen',
             'lastname' => 'morales',
             'username' => 'valenms',
@@ -24,7 +25,7 @@ class AdminUserSeeder extends Seeder
             'created_at' => '2021-04-19 00:00:00',
             'updated_at' => '2021-04-19 00:00:00',
         ]);
-        DB::table('users')->insert([
+        User::create([
             'name' => 'tomas',
             'lastname' => 'trejos',
             'username' => 'ttrejosg',
@@ -36,7 +37,7 @@ class AdminUserSeeder extends Seeder
             'updated_at' => '2021-04-19 00:00:00',
         ]);
 
-        DB::table('users')->insert([
+        User::create([
             'name' => 'Carlos',
             'lastname' => 'chitiva',
             'username' => 'cheto59',
@@ -48,15 +49,15 @@ class AdminUserSeeder extends Seeder
             'updated_at' => '2021-04-19 00:00:00',
         ]);
 
-        DB::table('adminUsers')->insert([
+        AdminUser::create([
             'user_id' => 1,
         ]);
 
-        DB::table('adminUsers')->insert([
+        AdminUser::create([
             'user_id' => 2,
         ]);
 
-        DB::table('adminUsers')->insert([
+        AdminUser::create([
             'user_id' => 3,
         ]);
     }

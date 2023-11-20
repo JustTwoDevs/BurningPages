@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('username', 255)->nullable(false);
             $table->string('password', 255)->nullable(false);
+            $table->rememberToken();
         });
     }
 
