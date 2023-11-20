@@ -147,7 +147,6 @@ Route::delete('v1/bookSagas/{booksaga}/books/{book}', [BookSagaController::class
 Route::post('v1/bookSagas/{booksaga}/reviews/{review}', [BookSagaController::class, 'addReview']);
 
 
-
 /**
  * Reseñas de un libro 
  * 
@@ -160,7 +159,7 @@ Route::post('v1/bookSagas/{booksaga}/reviews/{review}', [BookSagaController::cla
 Route::get('v1/users/{user}/bookReviews', [BookReviewController::class, 'indexByUser']);
 Route::get('v1/books/{book}/bookReviews', [BookReviewController::class, 'indexByBook']);
 Route::get('v1/bookReviews', [BookReviewController::class, 'index']);
-Route::get('v1/bookReviews/{review}', [BookReviewController::class, 'show']);
+Route::get('v1/bookReviews/{bookReview}', [BookReviewController::class, 'show']);
 
 
 /**
@@ -179,9 +178,9 @@ Route::get('v1/books/{book}/bookReviews', [BookReviewController::class, 'indexBy
 Route::get('v1/bookReviews', [BookReviewController::class, 'registeredIndex']);
 Route::post('v1/bookReviews', [BookReviewController::class, 'store']);
 Route::patch('v1/bookReviews/{review}', [BookReviewController::class, 'publishRegistered']);
-Route::put('v1/bookReviews/{review}', [BookReviewController::class, 'update']);
-Route::delete('v1/bookReviews/{review}', [BookReviewController::class, 'destroy']);
-Route::get('v1/bookReviews/{review}', [BookReviewController::class, 'showRegistered']);
+Route::put('v1/bookReviews/{bookReview}', [BookReviewController::class, 'update']);
+Route::delete('v1/bookReviews/{bookReview}', [BookReviewController::class, 'destroy']);
+Route::get('v1/bookReviews/{bookReview}', [BookReviewController::class, 'showRegistered']);
 
 /**
  * Rutas de usuario administrativo 
@@ -197,8 +196,7 @@ Route::get('v1/books/{book}/bookReviews', [BookReviewController::class, 'indexBy
 Route::get('v1/bookReviews', [BookReviewController::class, 'registeredIndex']);
 Route::patch('v1/bookReviews/{review}/publish', [BookReviewController::class, 'publishAdmin']);
 Route::patch('v1/bookReviews/{review}/hide', [BookReviewController::class, 'occult']);
-Route::get('v1/bookReviews/{review}', [BookReviewController::class, 'showRegistered']);
-
+Route::get('v1/bookReviews/{bookReview}', [BookReviewController::class, 'showRegistered']);
 
 
 /**
@@ -213,7 +211,7 @@ Route::get('v1/bookReviews/{review}', [BookReviewController::class, 'showRegiste
 Route::get('v1/users/{user}/bookSagaReviews', [BookSagaReviewController::class, 'indexByUser']);
 Route::get('v1/books/{book}/bookSagaReviews', [BookSagaReviewController::class, 'indexByBook']);
 Route::get('v1/bookSagaReviews', [BookReviewController::class, 'index']);
-Route::get('v1/bookSagaReviews/{review}', [BookSagaReviewController::class, 'show']);
+Route::get('v1/bookSagaReviews/{bookSagaReview}', [BookSagaReviewController::class, 'show']);
 
 
 /**
@@ -228,13 +226,13 @@ Route::get('v1/bookSagaReviews/{review}', [BookSagaReviewController::class, 'sho
  * 8. Obtener una reseña por el id
  */
 Route::get('v1/users/{user}/bookSagaReviews', [BookSagaReviewController::class, 'indexByUserRegistered']);
-Route::get('v1/bookSagas/{book}/bookSagaReviews', [BookSagaReviewController::class, 'indexByBookSagaRegistered']);
+Route::get('v1/bookSagas/{bookSagaReview}/bookSagaReviews', [BookSagaReviewController::class, 'indexByBookSagaRegistered']);
 Route::get('v1/bookSagaReviews', [BookSagaReviewController::class, 'registeredIndex']);
 Route::post('v1/bookSagaReviews', [BookSagaReviewController::class, 'store']);
 Route::patch('v1/bookSagaReviews/{review}', [BookSagaReviewController::class, 'publishRegistered']);
-Route::put('v1/bookSagaReviews/{review}', [BookSagaReviewController::class, 'update']);
-Route::delete('v1/bookSagaReviews/{review}', [BookSagaReviewController::class, 'destroy']);
-Route::get('v1/bookSagaReviews/{review}', [BookSagaReviewController::class, 'showRegistered']);
+Route::put('v1/bookSagaReviews/{bookSagaReview}', [BookSagaReviewController::class, 'update']);
+Route::delete('v1/bookSagaReviews/{bookSagaReview}', [BookSagaReviewController::class, 'destroy']);
+Route::get('v1/bookSagaReviews/{bookSagaReview}', [BookSagaReviewController::class, 'showRegistered']);
 
 /**
  * Rutas de usuario administrativo 
