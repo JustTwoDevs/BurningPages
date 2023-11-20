@@ -14,9 +14,12 @@ class BookReview extends Model
     protected $fillable = [
         'rate',
         'content',
-        'state',
         'book_id',
         'user_id',
+    ];
+
+    protected $atributes = [
+        'state' => 'draft',
     ];
 
     public function book()
@@ -27,8 +30,8 @@ class BookReview extends Model
     {
         return $this->belongsTo(RegisteredUser::class, 'user_id');
     }
-    public function reviewRate()
-    {
+
+    public function reviewRates(){
         return $this->hasMany(ReviewRate::class, 'bookReview_id');
     }
 }

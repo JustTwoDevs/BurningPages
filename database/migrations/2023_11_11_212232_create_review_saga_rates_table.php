@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('sagaReviewRates', function (Blueprint $table) {
-            $table->primary(['user_id', 'bookSagaReview_id']);
+            $table->id()->autoincrement();
             $table->foreignId('user_id')->nullable(false);
             $table->foreign('user_id')->references('id')->on('registeredUsers')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('bookSagaReview_id')->nullable(false);

@@ -5,15 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class backingRequest extends Model
+class BackingRequest extends Model
 {
     use HasFactory;
     protected $table = 'backingRequests';
 
     protected $fillable = [
-        'state',
         'content',
         'user_id',
+    ];
+    protected $atributes = [
+        'state' => 'pending',
     ];
 
     public function user()

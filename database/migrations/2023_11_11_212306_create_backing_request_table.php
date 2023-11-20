@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('backingRequests', function (Blueprint $table) {
             $table->id()->autoincrement();
-            $table->enum('state', ['pending', 'approved', 'rejected'])->nullable(false);
+            $table->enum('state', ['pending', 'approved', 'rejected'])->nullable(false)->default('pending');
             $table->text('content')->nullable(false);
             $table->foreignId('user_id')->nullable(false);
             $table->foreign('user_id')->references('id')->on('registeredUsers')->cascadeOnUpdate()->cascadeOnDelete();

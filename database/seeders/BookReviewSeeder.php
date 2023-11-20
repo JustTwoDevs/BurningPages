@@ -22,7 +22,7 @@ class BookReviewSeeder extends Seeder
         ]);
         DB::table('bookReviews')->insert([
             'content' => 'es un desperdicio leer este libro ',
-            'state' => 'published',
+            'state' => 'draft',
             'rate'=> 1.5,
             'user_id' => 2,
             'book_id' => 1,
