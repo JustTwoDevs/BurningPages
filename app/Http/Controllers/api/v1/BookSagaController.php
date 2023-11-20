@@ -10,6 +10,7 @@ use App\Http\Requests\api\v1\BookSagaStoreRequest;
 use App\Http\Requests\api\v1\BookSagaUpdateRequest;
 use App\Http\Requests\api\v1\AddBookStoreRequest;
 use App\Http\Resources\BookSagaResource;
+use Illuminate\Support\Facades\Gate;
 
 class BookSagaController extends Controller
 {
@@ -104,6 +105,7 @@ class BookSagaController extends Controller
      */
     public function store(BookSagaStoreRequest $request)
     {
+        Gate::authorize('adminUser');
         $request['burningmeter'] = 0;
         $request['readersScore'] = 0;
         $bookSaga = BookSaga::create($request->all());
