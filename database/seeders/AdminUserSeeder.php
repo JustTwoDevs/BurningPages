@@ -20,7 +20,7 @@ class AdminUserSeeder extends Seeder
             'email' => 'valentinams419@gmail.com',
             'password' => 'hola123',
             'birthdate' => '1999-04-19',
-            'nationality' => 1,
+            'nationality_id' => 1,
             'created_at' => '2021-04-19 00:00:00',
             'updated_at' => '2021-04-19 00:00:00',
         ]);
@@ -31,7 +31,7 @@ class AdminUserSeeder extends Seeder
             'email' => 'tomastrejos@gmail.com',
             'password' => 'hola123',
             'birthdate' => '1999-04-19',
-            'nationality' => 1,
+            'nationality_id' => 1,
             'created_at' => '2021-04-19 00:00:00',
             'updated_at' => '2021-04-19 00:00:00',
         ]);
@@ -43,7 +43,7 @@ class AdminUserSeeder extends Seeder
             'email' => 'carlosa.paezc@autonoma.edu.co',
             'password' => 'hola123',
             'birthdate' => '1999-04-19',
-            'nationality' => 1,
+            'nationality_id' => 1,
             'created_at' => '2021-04-19 00:00:00',
             'updated_at' => '2021-04-19 00:00:00',
         ]);

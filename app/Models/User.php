@@ -25,7 +25,7 @@ class User extends Authenticatable
         'email',
         'password',
         'birthdate',
-        'nationality',
+        'nationality_id',
     ];
 
     /**
@@ -50,6 +50,6 @@ class User extends Authenticatable
 
     public function nationality(): BelongsTo
     {
-        return $this->belongsTo(Nationality::class, 'nationality');
+        return $this->belongsTo(Nationality::class, 'nationality_id');
     }
 }
