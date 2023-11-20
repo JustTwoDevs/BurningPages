@@ -61,28 +61,57 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::delete("v1/myprofile", [RegisteredUserController::class, 'deleteMyProfile']);
 
         /**
-         * Books
-         *  1 Añadir una reseña a un libro.
+         * BookReviews
+         * Rutas de usuario registrado:
+         * 1. Obtener todas las reseñas de una saga (sin importar su estado)
+         * 2. Obtener todas las reseñas de un usuario
+         * 3. Obtener todas las reseñas de una saga
+         * 4. Crear una reseña de una saga
+         * 5. Publicar una reseña de una saga
+         * 6. Editar una reseña de una saga
+         * 7. Eliminar una reseña de una saga
+         * 8. Obtener una reseña por el id
          */
-        Route::post('v1/books/{book}/reviews/{review}', [BookController::class, 'addReview']);
+        Route::get('v1/myprofile/bookReviews', [BookReviewController::class, 'indexMyBookReviews']);
+        Route::get('v1/books/{book}/bookReviews', [BookReviewController::class, 'indexByBookRegistered']);
+        Route::get('v1/bookReviews', [BookReviewController::class, 'registeredIndex']);
+        Route::post('v1/bookReviews', [BookReviewController::class, 'store']);
+        Route::patch('v1/bookReviews/{review}/publish', [BookReviewController::class, 'publishRegistered']);
+        Route::put('v1/bookReviews/{bookReview}', [BookReviewController::class, 'update']);
+        Route::delete('v1/bookReviews/{bookReview}', [BookReviewController::class, 'destroy']);
+        Route::get('v1/bookReviews/{bookReview}', [BookReviewController::class, 'showRegistered']);
 
         /**
-         * BookSagas
-         *  1 Añadir una reseña a una saga.
+         * BookSagaReviews
+         * Rutas de usuario registrado:
+         * 1. Obtener todas las reseñas de una saga (sin importar su estado)
+         * 2. Obtener todas las reseñas de un usuario
+         * 3. Obtener todas las reseñas de una saga
+         * 4. Crear una reseña de una saga
+         * 5. Publicar una reseña de una saga
+         * 6. Editar una reseña de una saga
+         * 7. Eliminar una reseña de una saga
+         * 8. Obtener una reseña por el id
          */
-        Route::post('v1/bookSagas/{booksaga}/reviews/{review}', [BookSagaController::class, 'addReview']);
+        Route::get('v1/myprofile/bookSagaReviews', [BookSagaReviewController::class, 'indexMyBookSagaReviews']);
+        Route::get('v1/bookSagas/{bookSagaReview}/bookSagaReviews', [BookSagaReviewController::class, 'indexByBookSagaRegistered']);
+        Route::get('v1/bookSagaReviews', [BookSagaReviewController::class, 'registeredIndex']);
+        Route::post('v1/bookSagaReviews', [BookSagaReviewController::class, 'store']);
+        Route::patch('v1/bookSagaReviews/{review}', [BookSagaReviewController::class, 'publishRegistered']);
+        Route::put('v1/bookSagaReviews/{bookSagaReview}', [BookSagaReviewController::class, 'update']);
+        Route::delete('v1/bookSagaReviews/{bookSagaReview}', [BookSagaReviewController::class, 'destroy']);
+        Route::get('v1/bookSagaReviews/{bookSagaReview}', [BookSagaReviewController::class, 'showRegistered']);
 
         /**
-         *  BookReviews
-         *  1. publicar una reseña.
+         * BackingRequests
+         * Rutas de usuario registrado:
+         * 1. Crear una solicitud de aval
+         * 2. Actualizar una solicitud de aval
+         * 3. Eliminar una solicitud de aval
          */
-        Route::patch('v1/bookReviews/{review}/publish', [BookReviewController::class, 'publish']);
-
-        /**
-         *  BookSagaReviews
-         *  1. publicar una reseña.
-         */
-        Route::patch('v1/bookSagaReviews/{review}/publish', [BookSagaReviewController::class, 'publish']);
+        Route::post('v1/backingRequests', [BackingRequestController::class, 'store']);
+        Route::put('v1/backingRequests/{backingRequest}', [BackingRequestController::class, 'update']);
+        Route::delete('v1/backingRequests/{backingRequest}', [BackingRequestController::class, 'destroy']);
 
         /**
          * ReviewRates
@@ -93,14 +122,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
         ]);
     });
 
-    // Rutas a las que puede acceder el usuario administrador.
+    // Rutas a las que puede acceder el usuario administrador y el Admin.
     Route::middleware('can:adminOrAdminUser')->group(function () {
-
-        /**
-         * Authors
-         */
-        Route::post('v1/authors/{author}/books/{book}', [AuthorController::class, 'addBook']);
-        Route::delete('v1/authors/{author}/books/{book}', [AuthorController::class, 'removeBook']);
 
         /**
          * registeredUsers
@@ -111,10 +134,18 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::delete("v1/registeredUsers/{userId}", [RegisteredUserController::class, 'destroy']);
 
         /**
+         * Authors
+         */
+        Route::apiResource('v1/authors', AuthorController::class)->except(['index', 'show']);
+        Route::post('v1/authors/{author}/books/{book}', [AuthorController::class, 'addBook']);
+        Route::delete('v1/authors/{author}/books/{book}', [AuthorController::class, 'removeBook']);
+
+        /**
          * Books
          * 1. Añadir un genero a un libro.
          * 2. Remover un genero a un libro.
          */
+        Route::apiResource('v1/books', BookController::class)->except(['index', 'show']);
         Route::post('v1/books/{book}/genres/{genre}', [BookController::class, 'addGenre']);
         Route::delete('v1/books/{book}/genres/{genre}', [BookController::class, 'removeGenre']);
 
@@ -123,30 +154,68 @@ Route::middleware(['auth:sanctum'])->group(function () {
          * 1. Añadir un libro a una saga.
          * 2. Remover un libro a una saga.
          */
+        Route::apiResource('v1/bookSagas', BookSagaController::class)->except(['index', 'show']);
         Route::post('v1/bookSagas/{booksaga}/books/{book}', [BookSagaController::class, 'addBook']);
         Route::delete('v1/bookSagas/{booksaga}/books/{book}', [BookSagaController::class, 'removeBook']);
 
         /**
-         * BookReviews
-         * 1. Ocultar una reseña.
+         * Genres
          */
+        Route::apiResource('v1/genres', GenreController::class);
+
+        /**
+         * BookReviews
+         * Rutas de usuario administrativo
+         * 1. Obtener todas las reseñas (sin importar su estado)
+         * 2. Obtener todas las reseñas de un usuario
+         * 3. Obtener todas las reseñas de un libro
+         * 4. Publicar una reseña de un libro
+         * 5. Ocultar una reseña de un libro
+         */
+        Route::get('v1/users/{user}/bookReviews', [BookReviewController::class, 'indexByUserAdmin']);
+        Route::get('v1/books/{book}/bookReviews', [BookReviewController::class, 'indexByBookRegistered']);
+        Route::get('v1/bookReviews', [BookReviewController::class, 'registeredIndex']);
+        Route::get('v1/bookReviews/{bookReview}', [BookReviewController::class, 'showRegistered']);
+        Route::patch('v1/bookReviews/{review}/publish', [BookReviewController::class, 'publishAdmin']);
         Route::patch('v1/bookReviews/{review}/hide', [BookReviewController::class, 'occult']);
 
         /**
          * BookSagaReviews
-         * 1. Ocultar una reseña.
+         * Rutas de usuario administrativo
+         * 1. Obtener todas las reseñas (sin importar su estado)
+         * 2. Obtener todas las reseñas de un usuario
+         * 3. Obtener todas las reseñas de un libro
+         * 4. Publicar una reseña de un libro
+         * 5. Ocultar una reseña de un libro
          */
+        Route::get('v1/users/{user}/bookSagaReviews', [BookSagaReviewController::class, 'indexByUserAdmin']);
+        Route::get('v1/books/{book}/bookSagaReviews', [BookSagaReviewController::class, 'indexByBookRegistered']);
+        Route::get('v1/bookSagaReviews', [BookSagaReviewController::class, 'registeredIndex']);
+        Route::patch('v1/bookSagaReviews/{review}/publish', [BookSagaReviewController::class, 'publishAdmin']);
         Route::patch('v1/bookSagaReviews/{review}/hide', [BookSagaReviewController::class, 'occult']);
+
+        /**
+         * BackingRequests
+         * Rutas de usuario administrativo:
+         * 1. Obtener todas las solicitudes de aval de un usuario
+         * 2. Obtener todas las solicitudes de aval
+         * 3. Obtener una solicitud de aval por id
+         * 2. Aprobar una solicitud de aval - usuario administrador
+         * 3. Rechazar una solicitud de aval - usuario administrador
+         */
+        Route::get('v1/users/{user}/backingRequests', [BackingRequestController::class, 'indexByUser']);
+        Route::get('v1/backingRequests/{backingRequest}', [BackingRequestController::class, 'show']);
+        Route::patch('v1/backingRequests/{backingRequest}/approve', [BackingRequestController::class, 'approve']);
+        Route::patch('v1/backingRequests/{backingRequest}/reject', [BackingRequestController::class, 'reject']);
     });
 
     // Rutas a las que puede acceder cualquier usuario autenticado.
     Route::post("v1/logout", [AuthController::class, 'logout']);
 });
 
-
-
-
-
+/**
+ * Rutas Publicas
+ */
 
 /**
  * Filtros:
@@ -165,17 +234,17 @@ Route::middleware(['auth:sanctum'])->group(function () {
  */
 
 // CRUD de todos los modelos
-Route::apiResources([
-    "v1/books" => BookController::class,
-    "v1/authors" => AuthorController::class,
-    "v1/bookSagas" => BookSagaController::class,
-    "v1/genres" => GenreController::class,
-]);
 
+// Route::apiResources([
+//     "v1/books" => BookController::class,
+//     "v1/authors" => AuthorController::class,
+//     "v1/bookSagas" => BookSagaController::class,
+//     "v1/genres" => GenreController::class,
+// ]);
+Route::apiResource("v1/books", BookController::class)->only(['index', 'show']);
+Route::apiResource("v1/authors", AuthorController::class)->only(['index', 'show']);
+Route::apiResource("v1/bookSagas", BookSagaController::class)->only(['index', 'show']);
 
-/**
- * Rutas Publicas
- */
 
 /**
  * Usuarios
@@ -215,63 +284,26 @@ Route::get('v1/books/{book}/bookSagas', [BookSagaController::class, 'indexByBook
 
 
 /**
- * Reseñas de un libro 
- * 
+ * Reseñas de un libro
+ *
  * Rutas publicas:
- * 1. Obtener todas las reseñas de un usuario 
- * 2. Obtener todas las reseñas de un libro 
- * 3. Obtener todas las reseñas que estén publicadas 
- * 4. Obtener una reseña publica por id 
+ * 1. Obtener todas las reseñas de un usuario
+ * 2. Obtener todas las reseñas de un libro
+ * 3. Obtener todas las reseñas que estén publicadas
+ * 4. Obtener una reseña publica por id
  */
 Route::get('v1/users/{user}/bookReviews', [BookReviewController::class, 'indexByUser']);
 Route::get('v1/books/{book}/bookReviews', [BookReviewController::class, 'indexByBook']);
 Route::get('v1/bookReviews', [BookReviewController::class, 'index']);
 Route::get('v1/bookReviews/{bookReview}', [BookReviewController::class, 'show']);
 
-
 /**
-    * Rutas de usuario registrado:
- * 1. Obtener todas las reseñas (sin importar su estado)
- * 2. Obtener todas las reseñas de un usuario
- * 3. Obtener todas las reseñas de un libro
- * 4. Crear una reseña de un libro
- * 5. Publicar una reseña de un libro
- * 6. Editar una reseña de un libro
- * 7. Eliminar una reseña de un libro
- * 8. Obtener una reseña por el id 
- */
-Route::get('v1/users/{user}/bookReviews', [BookReviewController::class, 'indexByUserRegistered']);
-Route::get('v1/books/{book}/bookReviews', [BookReviewController::class, 'indexByBookRegistered']);
-Route::get('v1/bookReviews', [BookReviewController::class, 'registeredIndex']);
-Route::post('v1/bookReviews', [BookReviewController::class, 'store']);
-Route::patch('v1/bookReviews/{review}', [BookReviewController::class, 'publishRegistered']);
-Route::put('v1/bookReviews/{bookReview}', [BookReviewController::class, 'update']);
-Route::delete('v1/bookReviews/{bookReview}', [BookReviewController::class, 'destroy']);
-Route::get('v1/bookReviews/{bookReview}', [BookReviewController::class, 'showRegistered']);
-
-/**
- * Rutas de usuario administrativo 
- * 1. Obtener todas las reseñas (sin importar su estado)
- * 2. Obtener todas las reseñas de un usuario
- * 3. Obtener todas las reseñas de un libro
- * 4. Publicar una reseña de un libro
- * 5. Ocultar una reseña de un libro
- * 6. Obtener una reseña por el id
- */
-Route::get('v1/users/{user}/bookReviews', [BookReviewController::class, 'indexByUserRegistered']);
-Route::get('v1/books/{book}/bookReviews', [BookReviewController::class, 'indexByBookRegistered']);
-Route::get('v1/bookReviews', [BookReviewController::class, 'registeredIndex']);
-Route::patch('v1/bookReviews/{review}/publish', [BookReviewController::class, 'publishAdmin']);
-Route::patch('v1/bookReviews/{review}/hide', [BookReviewController::class, 'occult']);
-Route::get('v1/bookReviews/{bookReview}', [BookReviewController::class, 'showRegistered']);
-
-/**
- * Reseñas de una saga 
- * 
+ * Reseñas de una saga
+ *
  * Rutas publicas:
- * 1. Obtener todas las reseñas de una saga de un usuario 
- * 2. Obtener todas las reseñas de una saga de un libro 
- * 3. Obtener todas las reseñas de una saga que estén publicadas 
+ * 1. Obtener todas las reseñas de una saga de un usuario
+ * 2. Obtener todas las reseñas de una saga de un libro
+ * 3. Obtener todas las reseñas de una saga que estén publicadas
  * 4. Obtener una reseña publica por id
  */
 
@@ -281,86 +313,10 @@ Route::get('v1/bookSagaReviews', [BookReviewController::class, 'index']);
 Route::get('v1/bookSagaReviews/{bookSagaReview}', [BookSagaReviewController::class, 'show']);
 
 /**
-    * Rutas de usuario registrado:
- * 1. Obtener todas las reseñas de una saga (sin importar su estado)
- * 2. Obtener todas las reseñas de un usuario
- * 3. Obtener todas las reseñas de una saga
- * 4. Crear una reseña de una saga
- * 5. Publicar una reseña de una saga
- * 6. Editar una reseña de una saga
- * 7. Eliminar una reseña de una saga 
- * 8. Obtener una reseña por el id
- */
-Route::get('v1/users/{user}/bookSagaReviews', [BookSagaReviewController::class, 'indexByUserRegistered']);
-Route::get('v1/bookSagas/{bookSagaReview}/bookSagaReviews', [BookSagaReviewController::class, 'indexByBookSagaRegistered']);
-Route::get('v1/bookSagaReviews', [BookSagaReviewController::class, 'registeredIndex']);
-Route::post('v1/bookSagaReviews', [BookSagaReviewController::class, 'store']);
-Route::patch('v1/bookSagaReviews/{review}', [BookSagaReviewController::class, 'publishRegistered']);
-Route::put('v1/bookSagaReviews/{bookSagaReview}', [BookSagaReviewController::class, 'update']);
-Route::delete('v1/bookSagaReviews/{bookSagaReview}', [BookSagaReviewController::class, 'destroy']);
-Route::get('v1/bookSagaReviews/{bookSagaReview}', [BookSagaReviewController::class, 'showRegistered']);
-
-/**
- * Rutas de usuario administrativo 
- * 1. Obtener todas las reseñas (sin importar su estado)
- * 2. Obtener todas las reseñas de un usuario
- * 3. Obtener todas las reseñas de un libro
- * 4. Publicar una reseña de un libro
- * 5. Ocultar una reseña de un libro
- */
-Route::get('v1/users/{user}/bookSagaReviews', [BookSagaReviewController::class, 'indexByUserRegistered']);
-Route::get('v1/books/{book}/bookSagaReviews', [BookSagaReviewController::class, 'indexByBookRegistered']);
-Route::get('v1/bookSagaReviews', [BookSagaReviewController::class, 'registeredIndex']);
-Route::patch('v1/bookSagaReviews/{review}/publish', [BookSagaReviewController::class, 'publishAdmin']);
-Route::patch('v1/bookSagaReviews/{review}/hide', [BookSagaReviewController::class, 'occult']);
-
-
-/**
- * Solicitudes de aval 
- * No tiene rutas publicas 
- * Rutas de usuario registrado:
- * 1. Crear una solicitud de aval
- * 2. Actualizar una solicitud de aval 
- * 3. Eliminar una solicitud de aval
- */
-Route::post('v1/backingRequests', [BackingRequestController::class, 'store']);
-Route::put('v1/backingRequests/{backingRequest}', [BackingRequestController::class, 'update']);
-Route::delete('v1/backingRequests/{backingRequest}', [BackingRequestController::class, 'destroy']);
-
-/** 
- * Rutas de usuario administrativo:
- * 1. Obtener todas las solicitudes de aval de un usuario 
- * 2. Obtener todas las solicitudes de aval
- * 3. Obtener una solicitud de aval por id 
- * 2. Aprobar una solicitud de aval - usuario administrador
- * 3. Rechazar una solicitud de aval - usuario administrador
- */
-Route::get('v1/users/{user}/backingRequests', [BackingRequestController::class, 'indexByUser']);
-Route::get('v1/backingRequests/{backingRequest}', [BackingRequestController::class, 'show']);
-Route::patch('v1/backingRequests/{backingRequest}/approve', [BackingRequestController::class, 'approve']);
-Route::patch('v1/backingRequests/{backingRequest}/reject', [BackingRequestController::class, 'reject']);
-
-
- * Calificaciones de una reseña 
- * Rutas publicas 
- * ver las calificaciones de una reseña de un libro 
+ * Calificaciones de una reseña
+ * Rutas publicas
+ * ver las calificaciones de una reseña de un libro
  * ver las calificaciones de una reseña de una saga
-*/
+ */
 Route::get('v1/bookReviews/{review}/reviewRates', [ReviewRateController::class, 'indexByReview']);
 Route::get('v1/bookSagaReviews/{review}/reviewRates', [SagaReviewRateController::class, 'indexByReview']);
-
-/** 
- * Rutas de usuario registrado 
- * 1. CRUD de calificaciones de una reseña de un libro
- * 2. CRUD de calificaciones de una reseña de una saga
- * 3. Obtener todas las calificaciones de una reseña de un libro 
- * 4. Obtener todas las calificaciones de una reseña de una saga 
- */
-Route::apiResources([
-    "v1/reviewRates" => ReviewRateController::class,
-    "v1/sagaReviewRates" => SagaReviewRateController::class,
-]);
-
-
- Route::get('v1/bookReviews/{review}/reviewRates', [ReviewRateController::class, 'indexByReview']);
- Route::get('v1/bookSagaReviews/{review}/reviewRates', [SagaReviewRateController::class, 'indexByReview']);
