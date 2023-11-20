@@ -22,14 +22,19 @@ class ReviewStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
+
+            'content' => 'required|string',
             'rate' => 'numeric',
             'book_id' => 'required|integer|exists:books,id',
             'user_id' => 'required|integer|exists:users,id',
+
         ];
         
     }
     public function messages():array{
         return [
+            'content.required' => 'The content is required.',
+            'content.string' => 'The content must be a string.',
             'rate.numeric' => 'The rate must be a number.',
             'book_id.required' => 'The book id is required.',
             'book_id.integer' => 'The book id must be an integer.',

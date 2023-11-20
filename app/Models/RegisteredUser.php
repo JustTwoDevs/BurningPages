@@ -17,15 +17,15 @@ class RegisteredUser extends Model
         'verified',
     ];
 
-    public function bookReviews()
+    public function reviews()
     {
-        return $this->hasMany(Review::class, 'user_id');
+        return $this->hasMany(BookReview::class, 'user_id');
     }
     public function reviewRates()
     {
         return $this->hasMany(reviewRate::class, 'user_id');
     }
-    public function bookSagaReviews()
+    public function sagaReviews()
     {
         return $this->hasMany(BookSagaReview::class, 'user_id');
     }
