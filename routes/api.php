@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\api\v1\BookController;
 use App\Http\Controllers\api\v1\AuthorController;
@@ -189,7 +188,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
          * 5. Ocultar una reseña de un libro
          */
         Route::get('v1/users/{user}/bookSagaReviews', [BookSagaReviewController::class, 'indexByUserAdmin']);
-        Route::get('v1/books/{book}/bookSagaReviews', [BookSagaReviewController::class, 'indexByBookRegistered']);
+        Route::get('v1/bookSaga/{bookSaga}/bookSagaReviews', [BookSagaReviewController::class, 'indexByBookSagaRegistered']);
         Route::get('v1/bookSagaReviews', [BookSagaReviewController::class, 'registeredIndex']);
         Route::patch('v1/bookSagaReviews/{review}/publish', [BookSagaReviewController::class, 'publishAdmin']);
         Route::patch('v1/bookSagaReviews/{review}/hide', [BookSagaReviewController::class, 'occult']);

@@ -74,6 +74,9 @@ class UserController extends Controller
 
 
         $users = $users->get();
+        foreach ($users as $user) {
+            $user->role = $user->isAdmin() ? 'admin' : 'registered';
+        }
         return response()->json(['users' => $users]);
     }
 
@@ -98,6 +101,7 @@ class UserController extends Controller
             }
         }
         $user->load('user.nationality');
+        $user->role = $user instanceof AdminUser ? 'admin' : 'registered';
         return response()->json(['user' => $user]);
     }
 
