@@ -116,9 +116,6 @@ class AuthorController extends Controller
      */
     public function store(AuthorStoreRequest $request)
     {
-        if (!Gate::any(['admin', 'adminUser'])) {
-            return response()->json(['message' => 'You do not have permission to create an author'], 403);
-        }
         $author = Author::create($request->all());
         $author->load('nationality');
         return response()->json(['author' => $author], 201);

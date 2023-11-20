@@ -10,7 +10,7 @@ use App\Http\Requests\api\v1\BookSagaStoreRequest;
 use App\Http\Requests\api\v1\BookSagaUpdateRequest;
 use App\Http\Requests\api\v1\AddBookStoreRequest;
 use App\Http\Resources\BookSagaResource;
-use Illuminate\Support\Facades\Gate;
+use App\Models\RegisteredUser;
 
 class BookSagaController extends Controller
 {
@@ -100,15 +100,15 @@ class BookSagaController extends Controller
         return response()->json(['bookSagas' => BookSagaResource::collection($bookSagas)], 200);
     }
 
-    public function indexByUser(Request $request, string $user){
-        $user=RegisteredUser::find($user);
-        if(!$user){
-            return response()->json(['message'=>'user not found'],404);
+    public function indexByUser(Request $request, string $user)
+    {
+        $user = RegisteredUser::find($user);
+        if (!$user) {
+            return response()->json(['message' => 'user not found'], 404);
         }
 
         $user->load('reviews');
-        return response()->json(['reviews'=>$user->reviews],200);
-
+        return response()->json(['reviews' => $user->reviews], 200);
     }
 
     /**
@@ -116,7 +116,6 @@ class BookSagaController extends Controller
      */
     public function store(BookSagaStoreRequest $request)
     {
-        Gate::authorize('adminUser');
         $request['burningmeter'] = 0;
         $request['readersScore'] = 0;
         $bookSaga = BookSaga::create($request->all());
