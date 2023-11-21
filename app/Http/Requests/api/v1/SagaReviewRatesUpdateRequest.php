@@ -22,15 +22,13 @@ class SagaReviewRatesUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'sagaReview_id' => 'required|integer|exists:saga_reviews,id',
+          
             'value' => 'boolean|nullable',
         ];
         
     }
     public function messages():array{
         return [
-            'sagaReview_id.required' => 'The sagaReview id is required.',
-            'sagaReview_id.exists' => 'The sagaReview id must exist in the sagaReviews table.',
             'value.boolean' => 'The rate id must be a boolean.',
 
         ];

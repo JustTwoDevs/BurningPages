@@ -100,8 +100,6 @@ Route::apiResources([
     "v1/authors" => AuthorController::class,
     "v1/bookSagas" => BookSagaController::class,
     "v1/genres" => GenreController::class,
-    "v1/backingRequests" => BackingRequestController::class,
-    "v1/bookSagaReviews" => BookSagaReviewController::class,
     "v1/reviewRates" => ReviewRateController::class,
     "v1/sagaReviewRates" => SagaReviewRateController::class,
 ]);
@@ -197,7 +195,6 @@ Route::get('v1/bookReviews', [BookReviewController::class, 'registeredIndex']);
 Route::patch('v1/bookReviews/{review}/publish', [BookReviewController::class, 'publishAdmin']);
 Route::patch('v1/bookReviews/{review}/hide', [BookReviewController::class, 'occult']);
 Route::get('v1/bookReviews/{bookReview}', [BookReviewController::class, 'showRegistered']);
-
 
 /**
  * Reseñas de una saga 

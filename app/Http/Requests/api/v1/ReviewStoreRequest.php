@@ -27,10 +27,9 @@ class ReviewStoreRequest extends FormRequest
             'rate' => 'numeric',
             'book_id' => 'required|integer|exists:books,id',
             'user_id' => 'required|integer|exists:users,id',
-
         ];
-        
     }
+    
     public function messages():array{
         return [
             'content.required' => 'The content is required.',

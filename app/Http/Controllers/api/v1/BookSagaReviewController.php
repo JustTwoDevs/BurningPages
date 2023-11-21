@@ -110,7 +110,7 @@ class BookSagaReviewController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(SagaUpdateRequest $request, BookSagaReview $bookSagaReview)
+    public function update(SagaReviewUpdateRequest $request, BookSagaReview $bookSagaReview)
     {
     
         $bookSagaReview->update($request->except(['state', 'user_id', 'bookSaga_id']));

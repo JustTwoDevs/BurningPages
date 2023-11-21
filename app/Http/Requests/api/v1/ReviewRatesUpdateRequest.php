@@ -29,8 +29,7 @@ class ReviewRatesUpdateRequest extends FormRequest
 
     public function messages(): array{
         return [
-            'review_id.required' => 'The review id is required.',
-            'review_id.exists' => 'The review id must exist in the reviews table.',
+           
             'value.boolean' => 'The rate id must be a boolean.',
 
         ];
