@@ -133,7 +133,7 @@ class AuthorController extends Controller
     }
 
     /**
-     * Obtener un autor.
+     * Obtener un autor
      */
     public function show(Author $author)
     {

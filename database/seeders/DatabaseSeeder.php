@@ -30,11 +30,13 @@ class DatabaseSeeder extends Seeder
             BookWritersSeeder::class,
             BookSagasSeeder::class,
             BookCollectionsSeeder::class,
+            ReviewSeeder::class,
             BookReviewSeeder::class,
             BookSagaReviewSeeder::class,
             ReviewRateSeeder::class,
             SagaReviewRateSeeder::class,
             BackingRequestSeeder::class,
+          
         ]);
     }
 }

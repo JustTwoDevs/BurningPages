@@ -26,9 +26,10 @@ class BookReviewController extends Controller
 
     public function index()
     {
-        $bookReviews = BookReview::with('book', 'user', 'reviewRates')->orderBy('id', 'asc')->get();
+        $bookReviews = BookReview::with('book', 'reviewRates')->orderBy('id', 'asc')->get();
+    
         $publishedReviews = $bookReviews->filter(function ($review) {
-            return $review->state === 'published';
+            return $review->review->state === 'published';
         });
         return response()->json(['bookReviews' => ReviewResource::collection($publishedReviews)], 200);
     }
@@ -101,9 +102,14 @@ class BookReviewController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(ReviewStoreRequest $request)
+    public function store(ReviewStoreRequest $request, Book $bookId)
     {
+        $user = auth()->user();
+        $registeredUser = RegisteredUser::query()->where('user_id', $user['id'])->first();
         $bookReview = BookReview::create($request->except('state'));
+        $bookReview->user_id = $registeredUser->id;
+        $book = Book::find($bookId);
+        $bookReview->book_id = $book->id;
         $bookReview->load(['reviewRates', 'book', 'user']);
 
         return response()->json(['bookReview' => new ReviewResource($bookReview)], 201);
@@ -132,7 +138,9 @@ class BookReviewController extends Controller
      */
     public function update(ReviewUpdateRequest $request, BookReview $bookReview)
     {
-
+        if ($bookReview->state !== 'draft') {
+            return response()->json(['message' => 'review is not a draft'], 400);
+        }
         $bookReview->update($request->except(['state', 'book_id', 'user_id']));
         $bookReview->load(['reviewRates', 'book', 'user']);
 
@@ -163,6 +171,16 @@ class BookReviewController extends Controller
     {
         if ($review->state === 'published') {
             $review->state = 'hidden';
+            $review->save();
+            return response()->json(['review' => new ReviewResource($review)]);
+        }
+        return response()->json(['message' => 'review is not published'], 400);
+    }
+
+    public function draft( BookReview $review)
+    {
+        if ($review->state === 'published') {
+            $review->state = 'draft';
             $review->save();
             return response()->json(['review' => new ReviewResource($review)]);
         }

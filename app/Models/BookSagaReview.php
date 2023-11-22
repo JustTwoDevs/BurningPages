@@ -3,10 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
 
-class BookSagaReview extends Model
+class BookSagaReview extends Review
 {
     use HasFactory;
 
@@ -14,24 +13,19 @@ class BookSagaReview extends Model
 
     protected $fillable = [
         'rate',
-        'content',
-        'bookSaga_id',
-        'user_id'
+        'content'
     ];
 
-    protected $atributes = [
-        'state' => 'draft',
-    ];
-
+   
+    public function review(){
+        return $this->belongsTo(Review::class, 'review_id');
+    }
 
     public function bookSaga()
     {
         return $this->belongsTo(BookSaga::class, 'bookSaga_id');
     }
-    public function user()
-    {
-        return $this->belongsTo(RegisteredUser::class, 'user_id');
-    }
+    
 
     public function reviewSagaRates(){
         return $this->hasMany(SagaReviewRate::class, 'bookSagaReview_id');
