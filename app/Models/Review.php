@@ -32,4 +32,8 @@ class Review extends Model
     {
         return BookSagaReview::query()->where('review_id', $this->id)->exists();
     }
+
+    public function reviewRates(){
+        return $this->hasMany(ReviewRate::class, 'review_id');
+    }
 }

@@ -14,10 +14,15 @@ class BookReviewRateController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function indexByReview(string $bookReviewId)
     {
-        
+        $bookReviewRates = BookReviewRate::with('bookReview', 'reviewRate')->orderBy('id', 'asc')->get();
+        $bookReviewRates = $bookReviewRates->filter(function ($review) use ($bookReviewId){
+            return  $review->bookReview_id == $bookReviewId;
+        });
+        return response()->json(['bookReviewRates' => BookReviewResource::collection($bookReviewRates)], 200);
     }
+   
 
     /**
      * Store a newly created resource in storage.
