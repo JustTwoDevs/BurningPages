@@ -15,25 +15,24 @@ class BookSagaReviewSeeder extends Seeder
     {
         
         DB::table('bookSagaReviews')->insert([
-            'content' => 'creo que es una saga muy buena',
-            'state' => 'published',
-            'rate' => 5,
-            'user_id' => 1,
+
+            'review_id' => 4,
             'bookSaga_id' => 1,
+          
         ]);
         DB::table('bookSagaReviews')->insert([
-            'content' => 'es un desperdicion leer esta saga ',
-            'state' => 'published',
-            'rate'=> 1.5,
-            'user_id' => 2,
+            'review_id' => 5,
+           
             'bookSaga_id' => 1,
+       
         ]);
 
         DB::table('bookSagaReviews')->insert([
-            'content' => 'me gustó pero es muy cliché',
-            'state' => 'published',
-            'user_id' => 2,
+            'review_id' => 6,
+         
             'bookSaga_id' => 1,
+     
+
         ]);
     }
 }

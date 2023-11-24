@@ -10,37 +10,26 @@ use App\Models\BookSaga;
 use App\Models\RegisteredUser;
 use App\Http\Requests\api\v1\SagaReviewStoreRequest;
 use App\Http\Resources\api\SagaReviewResource;
+use App\Models\Review;
 
 class BookSagaReviewController extends Controller
 {
-    public function index()
+ 
+        public function indexByBookSaga( BookSaga $bookSaga)
     {
-
-        $bookSagaReviews = BookSagaReview::with('user', 'bookSaga')->orderBy('id', 'asc')->get();
-        $publishedReviews = $bookSagaReviews->filter(function ($review) {
-            return $review->state === 'published';
-        });
-        return response()->json(['bookSagaReviews' => SagaReviewResource::collection($publishedReviews)], 200);
-    }
-    public function registeredIndex()
-    {
-        $bookSagaReviews = BookSagaReview::with('user', 'bookSaga')->orderBy('id', 'asc')->get();
-
-        return response()->json(['bookSagaReviews' => SagaReviewResource::collection($bookSagaReviews)], 200);
-    }
-
-    public function indexByBookSagaRegistered(string $bookSaga)
-    {
-        $bookSaga = BookSaga::find($bookSaga);
         if (!$bookSaga) {
             return response()->json(['message' => 'book saga not found'], 404);
         }
-
-        $bookSaga->load('reviews');
-        return response()->json(['reviews' => $bookSaga->reviews], 200);
+        $bookReviews = BookSagaReview::with('bookSaga', 'reviewSagaRates')->orderBy('id', 'asc')->get();
+      
+        $publishedReviews = $bookReviews->filter(function ($review) use ($bookSaga){
+            return  $review->bookSaga_id == $bookSaga->id && $review->review->state === 'published';
+        });
+        return response()->json(['sagaReviews' => SagaReviewResource::collection($publishedReviews)], 200);
     }
+    
 
-    public function indexMyBookSagaReviews()
+    public function indexBookSagaReviews()
     {
         $user = auth()->user();
         if (!$user) {
@@ -51,7 +40,20 @@ class BookSagaReviewController extends Controller
         return response()->json(['reviews' => $registeredUser->sagaReviews], 200);
     }
 
-    public function indexByBookSaga(string $bookSaga)
+    public function indexByBookSagaAdmin( BookSaga $bookSaga)
+    {
+        if (!$bookSaga) {
+            return response()->json(['message' => 'book saga not found'], 404);
+        }
+        $bookReviews = BookSagaReview::with('bookSaga', 'reviewSagaRates')->orderBy('id', 'asc')->get();
+      
+        $publishedReviews = $bookReviews->filter(function ($review) use ($bookSaga){
+            return  $review->bookSaga_id == $bookSaga->id ;
+        });
+        return response()->json(['sagaReviews' => SagaReviewResource::collection($publishedReviews)], 200);
+    }
+
+    public function show(string $bookSaga)
     {
         $bookSaga = BookSaga::find($bookSaga);
         if (!$bookSaga) {
@@ -59,74 +61,52 @@ class BookSagaReviewController extends Controller
         }
 
         $bookSaga->load('reviews');
+
         $publishedReviews = $bookSaga->reviews->filter(function ($review) {
             return $review->state === 'published';
         });
         return response()->json(['reviews' => $publishedReviews], 200);
     }
 
-    public function indexByUser(string $user)
-    {
-        $user = RegisteredUser::find($user);
-        if (!$user) {
-            return response()->json(['message' => 'user not found'], 404);
-        }
-
-        $user->load('sagaReviews');
-        $publishedReviews = $user->sagaReviews->filter(function ($sagaReview) {
-            return $sagaReview->state === 'published';
-        });
-        return response()->json(['reviews' => $publishedReviews], 200);
-    }
-
-    public function indexByUserAdmin(string $user)
-    {
-        $user = RegisteredUser::find($user);
-        if (!$user) {
-            return response()->json(['message' => 'user not found'], 404);
-        }
-
-        $user->load('sagaReviews');
-
-        return response()->json(['reviews' => $user->sagaReviews], 200);
-    }
+    
 
 
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(SagaReviewStoreRequest $request)
+    public function store(SagaReviewStoreRequest $request, string $bookSaga)
     {
-        $bookSagaReview = BookSagaReview::create($request->except('state'));
-        $bookSagaReview->load('user', 'bookSaga', 'reviewSagaRates');
-        return response()->json(['bookSagaReview' => new SagaReviewResource($bookSagaReview)], 201);
+       
+        $user = auth()->user();
+        $registeredUser = RegisteredUser::query()->where('user_id', $user['id'])->first();
+        $data = [
+            'content' => $request->input('content'),
+            'rate' => $request->input('rate'),
+            'user_id' => $registeredUser->id,
+        ];
+        $review = Review::create($data);
+        $data = [
+            'bookSaga_id' => $bookSaga,
+            'review_id' => $review->id,
+        ];
+        $bookSagaReview = BookSagaReview::create($data);
+        $bookSagaReview->load(['reviewSagaRates', 'bookSaga', 'user']);
+
+        return response()->json(['sagaReview' => new SagaReviewResource($bookSagaReview)], 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(BookSagaReview $bookSagaReview)
-    {
-        $bookSagaReview->load('user', 'bookSaga', 'reviewSagaRates');
-        if ($bookSagaReview->state === 'published') {
-            return response()->json(['bookSagaReview' => new SagaReviewResource($bookSagaReview)], 200);
-        }
-        return response()->json(['message' => 'review not found'], 404);
-    }
+  
 
-    public function showRegistered(BookSagaReview $bookSagaReview)
-    {
-        $bookSagaReview->load('user', 'bookSaga', 'reviewSagaRates');
-
-        return response()->json(['bookSagaReview' => new SagaReviewResource($bookSagaReview)], 200);
-    }
 
     /**
      * Update the specified resource in storage.
      */
     public function update(SagaReviewUpdateRequest $request, BookSagaReview $bookSagaReview)
     {
+        if ($bookSagaReview->state === 'published' || $bookSagaReview->state === 'hidden') {
+            return response()->json(['message' => 'the review is not a draft'], 400);
+        } 
 
         $bookSagaReview->update($request->except(['state', 'user_id', 'bookSaga_id']));
         $bookSagaReview->load('user', 'bookSaga', 'reviewSagaRates');
@@ -134,44 +114,10 @@ class BookSagaReviewController extends Controller
         return response()->json(['bookSagaReview' => new SagaReviewResource($bookSagaReview)], 200);
     }
 
-    public function publishAdmin(Request $request, BookSagaReview $review)
-    {
-        if ($review->state === 'hidden') {
-            $review->state = 'published';
-            $review->save();
-            return response()->json(['review' => new  SagaReviewResource($review)]);
-        }
-        return response()->json(['message' => 'the review is not occult'], 400);
-    }
-    public function publishRegistered(Request $request, BookSagaReview $review)
-    {
-        if ($review->state === 'draft') {
-            $review->state = 'published';
-            $review->save();
-            return response()->json(['review' => new  SagaReviewResource($review)]);
-        }
-        return response()->json(['message' => 'the review is not a draft'], 400);
-    }
+
+   
 
 
-    public function occult(Request $request, BookSagaReview $review)
-    {
-        if ($review->state === 'published') {
-            $review->state = 'hidden';
-            $review->save();
-            return response()->json(['review' => new  SagaReviewResource($review)]);
-        }
-        return response()->json(['message' => 'the review is not published'], 400);
-    }
+  
 
-
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(BookSagaReview $bookSagaReview)
-    {
-        $bookSagaReview->delete();
-        return response(null, 204);
-    }
 }

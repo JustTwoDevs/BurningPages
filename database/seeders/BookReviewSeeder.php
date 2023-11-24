@@ -13,27 +13,24 @@ class BookReviewSeeder extends Seeder
      */
     public function run(): void
     {
+        
         DB::table('bookReviews')->insert([
-            'content' => 'creo que es un libro muy bueno',
-            'state' => 'published',
-            'rate' => 5,
-            'user_id' => 1,
+            'review_id' => 1,
+        
             'book_id' => 1,
+      
         ]);
         DB::table('bookReviews')->insert([
-            'content' => 'es un desperdicio leer este libro ',
-            'state' => 'draft',
-            'rate'=> 1.5,
-            'user_id' => 2,
+            'review_id' => 2,
+            
             'book_id' => 1,
+       
         ]);
 
         DB::table('bookReviews')->insert([
-            'content' => 'me gustó pero es muy cliché',
-            'state' => 'published',
-            'rate'=> 3.5,
-            'user_id' => 2,
+            'review_id' => 3,
             'book_id' => 2,
+          
         ]);
     }
 }

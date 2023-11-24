@@ -11,12 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('sagaReviewRates', function (Blueprint $table) {
+        Schema::create('reviewRates', function (Blueprint $table) {
             $table->id()->autoincrement();
-          
-            $table->foreignId('bookSagaReview_id')->nullable(false);
-            $table->foreign('bookSagaReview_id')->references('id')->on('bookSagaReviews');
-            $table->foreignId('reviewRate_id')->constrained('reviewRates')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('user_id')->nullable(false);
+            $table->foreign('user_id')->references('id')->on('registeredUsers')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->binary('value')->nullable(true);
             $table->timestamps();
         });
     }
@@ -26,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('sagaReviewRates');
+        Schema::dropIfExists('reviewRates');
     }
 };

@@ -5,32 +5,31 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ReviewRate extends Model
+class Review extends Model
 {
     use HasFactory;
-
-    
-    protected $table = 'reviewRates';
-
+    protected $table = 'reviews';
     protected $fillable = [
-      
-       'value',
-         'user_id',
-        
+        'rate',
+        'content',
+        'user_id',
     ];
+    protected $atributes = [
+        'state' => 'draft',
+    ];
+
     public function user()
     {
         return $this->belongsTo(RegisteredUser::class, 'user_id');
     }
-
     public function isBook(): bool
     {
-        return BookReviewRate::query()->where('reviewRate_id', $this->id)->exists();
+        return BookReview::query()->where('review_id', $this->id)->exists();
     }
     
 
     public function isSaga(): bool
     {
-        return SagaReviewRate::query()->where('reviewRate_id', $this->id)->exists();
+        return BookSagaReview::query()->where('review_id', $this->id)->exists();
     }
 }

@@ -1,72 +1,67 @@
 <?php
 
 namespace App\Http\Controllers\api\v1;
-
 use App\Http\Controllers\Controller;
+use App\Http\Requests\api\v1\ReviewRatesStoreRequest;
+use App\Http\Resources\api\ReviewRateResource;
 use App\Models\ReviewRate;
 use Illuminate\Http\Request;
-use App\Models\BookReview;
-use App\Http\Requests\api\v1\ReviewRatesStoreRequest;
-use App\Http\Requests\api\v1\ReviewRatesUpdateRequest;
-use App\Http\Resources\api\ReviewRateResource;
+
+
 
 class ReviewRateController extends Controller
 {
     public function index()
     {
-     $reviewRates = ReviewRate::with('user', 'bookReview')->orderBy('user_id', 'asc')->orderBy('bookReview_id', 'asc')->get();
+        $reviewRates = ReviewRate::with('user', 'review')->orderBy('user_id', 'asc')->get();
 
-    return response()->json(['reviewRates' => ReviewRateResource::collection($reviewRates)], 200);
+        return response()->json(['reviewRate' => ReviewRateResource::collection($reviewRates)], 200);
     }
-
-    public function indexByReview(string $review){
-        $review=BookReview::find($review);
-        if(!$review){
-            return response()->json(['message'=>'review not found'],404);
+    public function indexMyReviewRates(){
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['message' => 'user not found'], 404);
         }
+       
+        $reviewRates = ReviewRate::with('user')->orderBy('user_id', 'asc')->get();
+      $filteredRates = $reviewRates->filter(function ($reviewRate) use ($user){
+            $result = $reviewRate->user->id == $user->id;
+            return $result;
 
-        $review->load('reviewRates');
-        return response()->json(['reviewRates'=>$review->reviewRates],200);
-
+        });
+        
+        return response()->json(['reviewRates' => ReviewRateResource::collection($filteredRates)], 200);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(ReviewRatesStoreRequest $request)
-    {
-        $ReviewRate = ReviewRate::create($request->all());
-        $ReviewRate->load('user', 'bookReview');
-        return response()->json(['ReviewRate' => new ReviewRateResource($ReviewRate)], 201);
+    public function update(ReviewRatesStoreRequest $request, string $reviewRate){
+        $reviewRate = ReviewRate::find($reviewRate);
+        if (!$reviewRate) {
+            return response()->json(['message' => 'review rate not found'], 404);
+        }
+        $reviewRate->update($request->except('user_id'));
+        return response()->json(['reviewRate' => new ReviewRateResource($reviewRate)], 200);
     }
+    
+
 
     /**
      * Display the specified resource.
      */
     public function show(ReviewRate $reviewRate)
     {
-        $reviewRate->load('user', 'bookReview');
-        return response()->json(['ReviewRate' => new ReviewRateResource($reviewRate)], 200);
+        $reviewRate->load('user');
+        return response()->json(['reviewRate' => new ReviewRateResource($reviewRate)], 200);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(ReviewRatesUpdateRequest $request, ReviewRate $reviewRate)
-    {
     
-        $reviewRate->update($request->all());
-        $reviewRate->load('user', 'bookReview');
-
-        return response()->json(['ReviewRate' => new ReviewRateResource($reviewRate)], 200);
-    }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(ReviewRate $ReviewRate)
+    public function destroy(ReviewRate $reviewRate)
     {
-        $ReviewRate->delete();
+        $reviewRate->delete();
         return response(null, 204);
     }
+    
 }

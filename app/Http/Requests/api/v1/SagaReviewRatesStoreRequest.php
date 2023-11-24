@@ -22,21 +22,17 @@ class SagaReviewRatesStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'sagaReview_id' => 'required|integer|exists:saga_reviews,id',
-            'user_id' => 'required|integer|exists:users,id',
-            'value' => 'boolean|nullable',
+           'value'=> 'boolean|nullable',
+
+            
         ];
         
     }
     public function messages():array{
         return [
-            'sagaReview_id.required' => 'The sagaReview id is required.',
-            'sagaReview_id.exists' => 'The sagaReview id must exist in the sagaReviews table.',
             'value.boolean' => 'The rate id must be a boolean.',
-            'user_id.required' => 'The user id is required.',
-            'user_id.exists' => 'The user id must exist in the users table.',
             
-
+            
         ];
     }
 }

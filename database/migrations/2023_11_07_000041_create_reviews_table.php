@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('reviewRates', function (Blueprint $table) {
+        Schema::create('reviews', function (Blueprint $table) {
             $table->id()->autoincrement();
-            $table->foreignId('bookReview_id')->nullable(false);
-            $table->foreign('bookReview_id')->references('id')->on('bookReviews');
+            $table->double('rate')->nullable(true);
+            $table->text('content')->nullable(false);
             $table->foreignId('user_id')->nullable(false);
             $table->foreign('user_id')->references('id')->on('registeredUsers')->cascadeOnUpdate()->cascadeOnDelete();
-            $table->binary('value')->nullable(true);
+            $table->enum('state', ['draft', 'published', 'hidden'])->nullable(false);
             $table->timestamps();
         });
     }
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('reviewRates');
+        Schema::dropIfExists('reviews');
     }
 };

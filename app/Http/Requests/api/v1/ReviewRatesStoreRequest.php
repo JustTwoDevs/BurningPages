@@ -22,20 +22,17 @@ class ReviewRatesStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'bookReview_id' => 'required|integer|exists:bookReviews,id',
+       
             'value' => 'boolean|nullable',
-            'user_id' => 'required|integer|exists:users,id',
+           
         ];
     }
 
     public function messages(): array{
         return [
-            'bookReview_id.required' => 'The review id is required.',
-            'bookReview_id.exists' => 'The review id must exist in the reviews table.',
+            
             'value.boolean' => 'The rate id must be a boolean.',
-            'user_id.required' => 'The user id is required.',
-            'user_id.integer' => 'The user id must be an integer.',
-            'user_id.exists' => 'The user id must exist in the users table.',
+         
 
         ];
     }

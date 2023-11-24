@@ -15,9 +15,10 @@ class SagaReviewRateResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-         'code' => $this->id,
-            'user' => $this->whenLoaded('user'),
-            'saga_review' => $this->whenLoaded('bookSagaReview'),
+            'code' => $this->id,
+            'user' => $this->reviewRate->user,
+            'bookReview' => $this->load('bookSagaReview')->bookSagaReview->review->load('bookSaga'),
+           'value' => $this->reviewRate->value,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

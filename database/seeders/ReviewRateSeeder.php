@@ -17,18 +17,34 @@ class ReviewRateSeeder extends Seeder
         DB::table('reviewRates')->insert([
           'value' => 1,
             'user_id' => 1,
-            'bookReview_id' => 1,
+     
         ]);
         DB::table('reviewRates')->insert([
             'value' => 0,
             'user_id' => 2,
-            'bookReview_id' => 1,
+          
         ]);
 
         DB::table('reviewRates')->insert([
             'value' => 1,
             'user_id' => 2,
-            'bookReview_id' => 2,
+          
         ]);
+        DB::table('reviewRates')->insert([
+            'value' => 1,
+              'user_id' => 1,
+       
+          ]);
+          DB::table('reviewRates')->insert([
+              'value' => 0,
+              'user_id' => 2,
+            
+          ]);
+  
+          DB::table('reviewRates')->insert([
+              'value' => 1,
+              'user_id' => 2,
+            
+          ]);
     }
 }

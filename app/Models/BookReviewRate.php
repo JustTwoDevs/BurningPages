@@ -5,28 +5,24 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class SagaReviewRate extends Model
+class BookReviewRate extends Model
 {
     use HasFactory;
-
-    protected $table = 'sagaReviewRates';
+    protected $table = 'bookReviewRates';
 
     protected $fillable = [
-      
-        'bookSagaReview_id',
+        'bookReview_id',
         'reviewRate_id'
-        
     ];
 
-    public function bookSagaReview()
+    public function bookReview()
     {
-        return $this->belongsTo(BookSagaReview::class, 'bookSagaReview_id');
+        return $this->belongsTo(BookReview::class, 'bookReview_id');
     }
 
     public function reviewRate()
     {
         return $this->belongsTo(ReviewRate::class, 'reviewRate_id');
     }
-
-
+   
 }
