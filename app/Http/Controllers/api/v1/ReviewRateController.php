@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\api\v1\ReviewRatesStoreRequest;
 use App\Http\Resources\api\ReviewRateResource;
 use App\Models\ReviewRate;
+use App\Models\Review;
 use Illuminate\Http\Request;
 
 
@@ -42,6 +43,16 @@ class ReviewRateController extends Controller
         return response()->json(['reviewRate' => new ReviewRateResource($reviewRate)], 200);
     }
     
+
+    public function indexByReview(Review $review){
+        if (!$review) {
+            return response()->json(['message' => 'review not found'], 404);
+        }
+        $review = Review::find($review);
+        $review->load('reviewRates');
+        $reviewRates = ReviewRate::with('user')->orderBy('user_id', 'asc')->get();
+        
+    }
 
 
     /**

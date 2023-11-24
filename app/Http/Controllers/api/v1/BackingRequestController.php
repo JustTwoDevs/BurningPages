@@ -35,7 +35,12 @@ class BackingRequestController extends Controller {
     */
 
     public function store( BackingRequestStoreRequest $request ) {
-        $backingRequest = BackingRequest::create( $request->all() );
+        $user = auth()->user();
+        $data = [
+            'user_id' => $user->id,
+            'content' => $request->input( 'content' ),
+        ];
+        $backingRequest = BackingRequest::create( $data );
 
         $backingRequest->load( 'user' );
         $backingRequest->state='pending';

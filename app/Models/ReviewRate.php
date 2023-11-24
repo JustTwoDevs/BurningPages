@@ -33,4 +33,5 @@ class ReviewRate extends Model
     {
         return SagaReviewRate::query()->where('reviewRate_id', $this->id)->exists();
     }
+   
 }

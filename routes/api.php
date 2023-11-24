@@ -70,12 +70,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
         /**
          * reviews
          * Rutas de usuario registrado:
-         * 1. Obtener todas las reseñas 
-         * 2. Obtener todas mis reseñas 
-         * 3. Obtener todas las reseñas de un libro
-         * 4. Obtener todas las reseñas de una saga
-         * 4. Crear una reseña de un libro 
-         * 5. crear una reseña de una saga 
+         * 1. Obtener todas mis reseñas 
+         * 2. Crear una reseña de un libro 
+         * 3. crear una reseña de una saga 
          * 5. Publicar una reseña
          * 6. Poner en borrador una reseña 
          * 7. Editar una reseña  
@@ -83,8 +80,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
          * 9. Obtener una reseña por el id
          */
         Route::get('v1/myprofile/reviews', [ReviewController::class, 'indexMyReviews']);
-        Route::get('v1/books/{book}/bookReviews', [BookReviewController::class, 'indexByBook']);
-        Route::get('v1/bookSagas/{bookSaga}/bookSagaReviews', [BookSagaReviewController::class, 'indexByBookSaga']);
         Route::post('v1/books/{bookId}/bookReviews', [BookReviewController::class, 'store']);
         Route::post('v1/bookSagas/{bookSaga}/bookSagaReviews', [BookSagaReviewController::class, 'store']);
         Route::patch('v1/reviews/{review}/public', [ReviewController::class, 'publishRegistered']);
@@ -114,7 +109,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
          * 3. actualizar una calificacion a una reseña
          * 4. ver todas mis calificaciones 
          * 5. eliminar una calificacion a una reseña 
-         * 6. obtener una calificacion por el id 
          * 
          */
        
@@ -167,18 +161,19 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::apiResource('v1/genres', GenreController::class);
 
         /**
-         * BookReviews
+         * reviews
          * Rutas de usuario administrativo
-         * 1. Obtener todas las reseñas (sin importar su estado)
+         * 1.  Obtener todas las reseñas (sin importar su estado)
          * 2. Obtener todas las reseñas de un usuario
          * 3. Obtener todas las reseñas de un libro
          * 4. Publicar una reseña de un libro
          * 5. Ocultar una reseña de un libro
+         * 6. Obtener una reseña por su id 
          */
+        Route::get('v1/allReviews', [ReviewController::class, 'indexAdmin']);
         Route::get('v1/users/{user}/allReviews', [ReviewController::class, 'indexByUserAdmin']);
         Route::get('v1/books/{book}/allBookReviews', [BookReviewController::class, 'indexByBookRegistered']);
         Route::get('v1/bookSagas/{bookSaga}/allBookSagaReviews', [BookSagaReviewController::class, 'indexByBookSagaAdmin']);
-        Route::get('v1/allReviews', [ReviewController::class, 'indexAdmin']);
         Route::get('v1/allReviews/{review}', [ReviewController::class, 'showAdmin']);
         Route::patch('v1/reviews/{review}/publish', [ReviewController::class, 'publishAdmin']);
         Route::patch('v1/reviews/{review}/hide', [ReviewController::class, 'occult']);
@@ -290,13 +285,13 @@ Route::get('v1/bookSagas/{bookSaga}/bookSagaReviews', [BookSagaReviewController:
 Route::get('v1/reviews', [ReviewController::class, 'index']);
 Route::get('v1/reviews/{review}', [ReviewController::class, 'show']);
 
-
-
 /**
  * Calificaciones de una reseña
  * Rutas publicas
+ * ver una calificacion especifica 
  * ver las calificaciones de una reseña de un libro
  * ver las calificaciones de una reseña de una saga
  */
-Route::get('v1/reviews/{review}/reviewRates', [ReviewRateController::class, 'indexByReview']);
 Route::get('v1/reviewRates/{reviewRate}', [ReviewRateController::class, 'show']);
+Route::get('v1/bookReviews/{review}/reviewRates', [BookReviewRateController::class, 'indexByReview']);
+Route::get('v1/bookSagaReviews/{review}/reviewRates', [SagaReviewRateController::class, 'indexByReview']);

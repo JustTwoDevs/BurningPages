@@ -19,14 +19,15 @@ class SagaReviewRateController extends Controller
    
     
     public function indexByReview(string $review){
-        $review=BookSagaReview::find($review);
-        if(!$review){
-            return response()->json(['message'=>'review not found'],404);
+        $review = BookSagaReview::find($review);
+        if (!$review) {
+            return response()->json(['message' => 'review not found'], 404);
         }
-
-        $review->load('reviewSagaRates');
-        return response()->json(['sagaReviewRates'=>$review->reviewSagaRates],200);
-
+        $reviewRates = SagaReviewRate::with('bookSagaReview', 'reviewRate')->orderBy('id', 'asc')->get();
+        $reviewRates = $reviewRates->filter(function ($reviewRate) use ($review){
+            return  $reviewRate->bookSagaReview_id == $review->id;
+        });
+        return response()->json(['reviewRates' => SagaReviewRateResource::collection($reviewRates)], 200);
     }
 
     /**

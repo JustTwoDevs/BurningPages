@@ -22,16 +22,14 @@ class BackingRequestStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => 'required|integer|exists:users,id',
+           
             'content' => 'required|string|max:1000|min:10',
         ];
     }
 
     public function messages():array{
         return [
-            'user_id.required' => 'The user id is required.',
-            'user_id.integer' => 'The user id must be an integer.',
-            'user_id.exists' => 'The user id must exist in the users table.',
+            
             'content.required' => 'The content is required.',
             'content.string' => 'The content must be a string.',
             'content.max' => 'The content must be less than 1000 characters.',
