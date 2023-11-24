@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 
 class BookReview extends Review
@@ -12,8 +13,9 @@ class BookReview extends Review
     protected $table = 'bookReviews';
 
     protected $fillable = [
-        'rate',
-        'content',
+      
+        'book_id',
+        'review_id'
     ];
 
    public function review(){
@@ -24,12 +26,9 @@ class BookReview extends Review
     {
         return $this->belongsTo(Book::class, 'book_id');
     }
-    public function user()
-    {
-        return $this->belongsTo(RegisteredUser::class, 'user_id');
-    }
+
 
     public function reviewRates(){
-        return $this->hasMany(ReviewRate::class, 'bookReview_id');
+        return $this->hasMany(BookReviewRate::class, 'bookReview_id');
     }
 }

@@ -4,6 +4,8 @@ namespace App\Http\Resources\api;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Models\BookReview;
+use App\Models\BookSagaReview;
 
 class GReviewResource extends JsonResource
 {
@@ -17,7 +19,7 @@ class GReviewResource extends JsonResource
         
         $formattedReview=[
             'code' => $this->id,
-            'user' => $this->user,
+            'user' => $this->load('user')->user,
             'rate' => $this->rate,
             'content'  => $this->content,
             'state' => $this->state,
@@ -25,14 +27,16 @@ class GReviewResource extends JsonResource
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
-        if ($this->resource instanceof \App\Models\BookReview) {
-            $formattedReview['book'] = 'pude entrar';
-            $formattedReview['book'] = $this->load('book');
+        if ($this->isbook()) {
+            $book = BookReview::query()->where('review_id', $this->id)->first();
+            $book->load('book');
+            $formattedReview['book'] = $book->book;
         }
-
-        if ($this->resource instanceof \App\Models\BookSagaReview) {
-            $formattedReview['book'] = 'pude entrar';
-            $formattedReview['bookSaga'] = $this->load('bookSaga');   
+    
+        if ($this->isSaga()) {
+            $bookSaga = BookSagaReview::query()->where('review_id', $this->id)->first();
+            $bookSaga->load('bookSaga');
+            $formattedReview['bookSaga'] = $bookSaga->bookSaga;
         }
 
         return $formattedReview;

@@ -17,7 +17,7 @@ class SagaReviewResource extends JsonResource
         return [
             'code' => $this->id,
             'user' => $this->review->user,
-            'book' => $this->whenLoaded('bookSaga'),
+            'bookSaga' => $this->load('bookSaga')->bookSaga,
             'rate' => $this->review->rate,
             'content'  => $this->review->content,
             'state' => $this->review->state,

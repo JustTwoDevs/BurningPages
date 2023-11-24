@@ -23,13 +23,10 @@ class RegisteredUser extends Model
     }
     public function reviewRates()
     {
-        return $this->hasMany(reviewRate::class, 'user_id');
+        return $this->hasMany(ReviewRate::class, 'user_id');
     }
    
-    public function sagaReviewRates()
-    {
-        return $this->hasMany(SagaReviewRate::class, 'user_id');
-    }
+  
     public function backingRequests()
     {
         return $this->hasMany(BackingRequest::class, 'user_id');

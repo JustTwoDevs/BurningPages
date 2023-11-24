@@ -4,7 +4,7 @@ namespace App\Http\Requests\api\v1;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class SagaReviewRatesUpdateRequest extends FormRequest
+class ReviewRatesUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,7 +22,7 @@ class SagaReviewRatesUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-          
+         
             'value' => 'boolean|nullable',
         ];
         

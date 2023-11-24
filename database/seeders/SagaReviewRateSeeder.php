@@ -15,19 +15,17 @@ class SagaReviewRateSeeder extends Seeder
     {
             
         DB::table('sagaReviewRates')->insert([
-            'value' => 1,
-              'user_id' => 1,
+
+           'reviewRate_id' => 4,
               'bookSagaReview_id' => 1,
           ]);
           DB::table('sagaReviewRates')->insert([
-              'value' => 0,
-              'user_id' => 2,
+           'reviewRate_id' => 5,
               'bookSagaReview_id' => 1,
           ]);
   
           DB::table('sagaReviewRates')->insert([
-              'value' => 1,
-              'user_id' => 2,
+        'reviewRate_id' => 6,
               'bookSagaReview_id' => 2,
           ]);
     }

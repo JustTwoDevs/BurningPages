@@ -12,6 +12,7 @@ class Review extends Model
     protected $fillable = [
         'rate',
         'content',
+        'user_id',
     ];
     protected $atributes = [
         'state' => 'draft',
@@ -20,5 +21,15 @@ class Review extends Model
     public function user()
     {
         return $this->belongsTo(RegisteredUser::class, 'user_id');
+    }
+    public function isBook(): bool
+    {
+        return BookReview::query()->where('review_id', $this->id)->exists();
+    }
+    
+
+    public function isSaga(): bool
+    {
+        return BookSagaReview::query()->where('review_id', $this->id)->exists();
     }
 }

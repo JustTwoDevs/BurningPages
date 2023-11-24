@@ -12,8 +12,9 @@ class BookSagaReview extends Review
     protected $table = 'bookSagaReviews';
 
     protected $fillable = [
-        'rate',
-        'content'
+        
+        'review_id',
+        'bookSaga_id'
     ];
 
    

@@ -34,6 +34,7 @@ class DatabaseSeeder extends Seeder
             BookReviewSeeder::class,
             BookSagaReviewSeeder::class,
             ReviewRateSeeder::class,
+            BookReviewRateSeeder::class,
             SagaReviewRateSeeder::class,
             BackingRequestSeeder::class,
           

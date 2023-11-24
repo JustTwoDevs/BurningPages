@@ -16,16 +16,21 @@ class BookReviewSeeder extends Seeder
         
         DB::table('bookReviews')->insert([
             'review_id' => 1,
+        
             'book_id' => 1,
+      
         ]);
         DB::table('bookReviews')->insert([
             'review_id' => 2,
+            
             'book_id' => 1,
+       
         ]);
 
         DB::table('bookReviews')->insert([
             'review_id' => 3,
             'book_id' => 2,
+          
         ]);
     }
 }

@@ -18,17 +18,21 @@ class BookSagaReviewSeeder extends Seeder
 
             'review_id' => 4,
             'bookSaga_id' => 1,
+          
         ]);
         DB::table('bookSagaReviews')->insert([
             'review_id' => 5,
            
             'bookSaga_id' => 1,
+       
         ]);
 
         DB::table('bookSagaReviews')->insert([
             'review_id' => 6,
          
             'bookSaga_id' => 1,
+     
+
         ]);
     }
 }

@@ -25,6 +25,8 @@ class ReviewStoreRequest extends FormRequest
 
             'content' => 'required|string',
             'rate' => 'numeric',
+            'book_id' => 'integer|exists:books,id',
+            'user_id' => 'integer|exists:users,id',
         ];
     }
 
