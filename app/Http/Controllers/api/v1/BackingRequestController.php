@@ -16,6 +16,7 @@ class BackingRequestController extends Controller {
     */
 
     public function index() {
+        
         $backingRequests = BackingRequest::with( 'user' )->orderBy( 'id', 'asc' )->get();
         return response()->json( [ 'backingRequests' => BackingRequestResource::collection( $backingRequests ) ], 200 );
     }
