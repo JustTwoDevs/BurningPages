@@ -90,17 +90,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
         
        
-       
         /**
          * BackingRequests
          * Rutas de usuario registrado:
          * 1. Crear una solicitud de aval
-         * 2. Actualizar una solicitud de aval
-         * 3. Eliminar una solicitud de aval
          */
         Route::post('v1/backingRequests', [BackingRequestController::class, 'store']);
-        Route::put('v1/backingRequests/{backingRequest}', [BackingRequestController::class, 'update']);
-        Route::delete('v1/backingRequests/{backingRequest}', [BackingRequestController::class, 'destroy']);
 
         /**
          * ReviewRates
@@ -169,6 +164,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
          * 4. Publicar una reseña de un libro
          * 5. Ocultar una reseña de un libro
          * 6. Obtener una reseña por su id 
+         * 7. Obtener todas las reseñas publicas 
          */
         Route::get('v1/allReviews', [ReviewController::class, 'indexAdmin']);
         Route::get('v1/users/{user}/allReviews', [ReviewController::class, 'indexByUserAdmin']);
@@ -177,9 +173,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('v1/allReviews/{review}', [ReviewController::class, 'showAdmin']);
         Route::patch('v1/reviews/{review}/publish', [ReviewController::class, 'publishAdmin']);
         Route::patch('v1/reviews/{review}/hide', [ReviewController::class, 'occult']);
-
+        Route::get('v1/reviews', [ReviewController::class, 'index']);
     
-      
        
      
         /**
@@ -192,6 +187,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
          * 3. Rechazar una solicitud de aval - usuario administrador
          */
         Route::get('v1/users/{user}/backingRequests', [BackingRequestController::class, 'indexByUser']);
+        Route::get('v1/backingRequests', [BackingRequestController::class, 'index']);
         Route::get('v1/backingRequests/{backingRequest}', [BackingRequestController::class, 'show']);
         Route::patch('v1/backingRequests/{backingRequest}/approve', [BackingRequestController::class, 'approve']);
         Route::patch('v1/backingRequests/{backingRequest}/reject', [BackingRequestController::class, 'reject']);
@@ -282,7 +278,6 @@ Route::get('v1/books/{book}/bookSagas', [BookSagaController::class, 'indexByBook
 Route::get('v1/users/{user}/reviews', [ReviewController::class, 'indexByUser']);
 Route::get('v1/books/{book}/bookReviews', [BookReviewController::class, 'indexByBook']);
 Route::get('v1/bookSagas/{bookSaga}/bookSagaReviews', [BookSagaReviewController::class, 'indexByBookSaga']);
-Route::get('v1/reviews', [ReviewController::class, 'index']);
 Route::get('v1/reviews/{review}', [ReviewController::class, 'show']);
 
 /**

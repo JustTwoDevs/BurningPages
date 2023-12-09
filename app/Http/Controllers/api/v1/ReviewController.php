@@ -149,8 +149,8 @@ class ReviewController extends Controller
 
     public function update(ReviewUpdateRequest $request, Review $review)
     {
-        if ($review->state !== 'draft') {
-            return response()->json(['message' => 'review is not a draft'], 400);
+        if ($review->state === 'published') {
+            return response()->json(['message' => 'you can not edit a public review'], 400);
         }
         $review->update($request->except(['state', 'user_id']));
         $review->load('user');
