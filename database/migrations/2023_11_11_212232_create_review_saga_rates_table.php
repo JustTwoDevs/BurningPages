@@ -16,7 +16,8 @@ return new class extends Migration
           
             $table->foreignId('bookSagaReview_id')->nullable(false);
             $table->foreign('bookSagaReview_id')->references('id')->on('bookSagaReviews');
-            $table->foreignId('reviewRate_id')->constrained('reviewRates')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('reviewRate_id')->nullable(false);
+            $table->foreign('reviewRate_id')->references('id')->on('reviewRates')->cascadeOnUpdate()->cascadeOnDelete();
             $table->timestamps();
         });
     }

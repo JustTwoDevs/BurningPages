@@ -12,9 +12,9 @@ class RegisteredUser extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'rank',
         'user_id',
         'verified',
+        'rank',
     ];
 
     public function reviews()

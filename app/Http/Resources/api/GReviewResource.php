@@ -5,7 +5,10 @@ namespace App\Http\Resources\api;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Models\BookReview;
+use App\Models\BookReviewRate;
+use App\Models\SagaReviewRate;
 use App\Models\BookSagaReview;
+
 
 class GReviewResource extends JsonResource
 {
@@ -39,6 +42,63 @@ class GReviewResource extends JsonResource
             $formattedReview['bookSaga'] = $bookSaga->bookSaga;
         }
 
+        $formattedReview['likes'] = $this->countLikes()['likes'];
+        $formattedReview['dislikes'] = $this->countLikes()['dislikes'];
+
         return $formattedReview;
     }
+
+    public function countLikes ()
+    {
+       $reviewRates = null;
+       if ($this->isbook()){
+        $reviewRates = BookReview::query()->where('review_id', $this->id);
+
+        $reviewRates = BookReview::query()->where('review_id', $this->id);
+
+     $likes=   $reviewRates->whereHas('reviewRates', function ($query) {
+            $query->whereHas('reviewRate', function ($q) {
+                $q->where('value', 1);
+            });
+        });
+
+    $dislikes = $reviewRates->whereHas('reviewRates', function ($query) {
+            $query->whereHas('reviewRate', function ($q) {
+                $q->where('value', 0);
+            });
+        });
+        
+  
+       } else{
+        $reviewRates = BookSagaReview::query()->where('review_id', $this->id);
+
+      $likes =  $reviewRates->whereHas('reviewSagaRates', function ($query) {
+            $query->whereHas('reviewRate', function ($q) {
+                $q->where('value', 1);
+            });
+        });
+        
+    $dislikes = $reviewRates->whereHas('reviewSagaRates', function ($query) {
+            $query->whereHas('reviewRate', function ($q) {
+                $q->where('value', 0);
+            });
+        });
+       }
+     
+        return [
+            'likes' => $likes->count(),
+            'dislikes' => $dislikes->count(),
+        ];
+    }
+
+        
+        
+      
+        
+    //     $reviewRates->whereHas('reviewSagaRates', function ($query) {
+    //         $query->count('value', 1);
+    //     });
+    
+
+
 }

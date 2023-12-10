@@ -16,7 +16,8 @@ return new class extends Migration
             $table->foreignId('user_id')->unique()->nullable(false);
             $table->foreign('user_id')->references('id')->on('users')->cascadeOnUpdate()->cascadeOnDelete();
             $table->boolean('verified')->default(false)->nullable(false);
-            $table->int('likeDifference')->default(0)->nullable(false);
+            $table->integer('likeDifference')->default(0)->nullable(false);
+            $table->enum('rank' , ['bronze', 'silver', 'gold'])->default('bronze')->nullable(false);
         });
     }
 

@@ -28,5 +28,4 @@ class SagaReviewRate extends Model
         return $this->belongsTo(ReviewRate::class, 'reviewRate_id');
     }
 
-
 }

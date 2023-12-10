@@ -80,6 +80,11 @@ class BookSagaReviewController extends Controller
        
         $user = auth()->user();
         $registeredUser = RegisteredUser::query()->where('user_id', $user['id'])->first();
+       // validar si el usuario ya hizo una review de esta saga 
+        $bookSagaReview = BookSagaReview::where('bookSaga_id', $bookSaga)->where('user_id', $registeredUser->id)->first();
+        if ($bookSagaReview) {
+            return response()->json(['message' => 'user already made a review of this saga'], 400);
+        }
         $data = [
             'content' => $request->input('content'),
             'rate' => $request->input('rate'),
@@ -99,20 +104,7 @@ class BookSagaReviewController extends Controller
   
 
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(SagaReviewUpdateRequest $request, BookSagaReview $bookSagaReview)
-    {
-        if ($bookSagaReview->state === 'published' || $bookSagaReview->state === 'hidden') {
-            return response()->json(['message' => 'the review is not a draft'], 400);
-        } 
-
-        $bookSagaReview->update($request->except(['state', 'user_id', 'bookSaga_id']));
-        $bookSagaReview->load('user', 'bookSaga', 'reviewSagaRates');
-
-        return response()->json(['bookSagaReview' => new SagaReviewResource($bookSagaReview)], 200);
-    }
+  
 
 
    

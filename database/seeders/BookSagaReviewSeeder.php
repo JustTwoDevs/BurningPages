@@ -29,7 +29,6 @@ class BookSagaReviewSeeder extends Seeder
 
         DB::table('bookSagaReviews')->insert([
             'review_id' => 6,
-         
             'bookSaga_id' => 1,
      
 

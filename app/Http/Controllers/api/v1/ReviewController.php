@@ -39,6 +39,17 @@ class ReviewController extends Controller
           
         }
 
+        if (isset($query['state'])) {
+            $search = str_replace('-', ' ', $query['state']);
+        
+            $publishedReviews = $publishedReviews->where(function ($q) use ($search) {
+                $q->where('state', 'like',  $search );
+            });
+        }
+
+    
+        
+
         return response()->json(['reviews' => GReviewResource::collection($publishedReviews)], 200);
     }
 
@@ -144,21 +155,13 @@ class ReviewController extends Controller
     public function showAdmin(Review $review)
     {
         $review->load([ 'user']);
+    
         return response()->json(['review' => new GReviewResource($review)], 200);
     }
 
-    public function update(ReviewUpdateRequest $request, Review $review)
-    {
-        if ($review->state === 'published') {
-            return response()->json(['message' => 'you can not edit a public review'], 400);
-        }
-        $review->update($request->except(['state', 'user_id']));
-        $review->load('user');
+   
 
-        return response()->json(['review' => new  GReviewResource($review)], 200);
-    }
-
-    public function indexByUser(Request $request, string $user)
+    public function indexByUser( string $user)
     {
         $user = RegisteredUser::find($user);
         if (!$user) {
@@ -174,7 +177,7 @@ class ReviewController extends Controller
         return response()->json(['reviews' => $publishedReviews], 200);
     }
 
-    public function indexByUserAdmin(Request $request, string $user)
+    public function indexByUserAdmin( string $user)
     {
         $user = RegisteredUser::find($user);
         if (!$user) {

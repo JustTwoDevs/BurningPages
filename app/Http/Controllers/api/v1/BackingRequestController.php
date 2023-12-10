@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers\api\v1;
-
 use App\Http\Controllers\Controller;
 use App\Models\BackingRequest;
 use App\Models\RegisteredUser;
@@ -16,7 +15,7 @@ class BackingRequestController extends Controller {
     */
 
     public function index() {
-        
+
         $backingRequests = BackingRequest::with( 'user' )->orderBy( 'id', 'asc' )->get();
         return response()->json( [ 'backingRequests' => BackingRequestResource::collection( $backingRequests ) ], 200 );
     }
@@ -37,6 +36,17 @@ class BackingRequestController extends Controller {
 
     public function store( BackingRequestStoreRequest $request ) {
         $user = auth()->user();
+       
+        $backingRequests = BackingRequest::with( 'user' )->orderBy( 'id', 'asc' )->get();
+        $backingRequests = $backingRequests->filter( function ( $backingRequest ) use ( $user ) {
+            return $backingRequest->user->id == $user->id;
+        } );
+        $backingRequests = $backingRequests->filter( function ( $backingRequest ) {
+            return $backingRequest->state === 'approved'|| $backingRequest->state === 'pending';
+        } );
+        if ( $backingRequests->count() > 0 ) {
+            return response()->json( [ 'message'=>'user already has an approved or pending backing request' ], 400 );
+        }
         $data = [
             'user_id' => $user->id,
             'content' => $request->input( 'content' ),

@@ -27,7 +27,6 @@ class BookSagaReview extends Review
         return $this->belongsTo(BookSaga::class, 'bookSaga_id');
     }
     
-
     public function reviewSagaRates(){
         return $this->hasMany(SagaReviewRate::class, 'bookSagaReview_id');
     }
