@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id()->autoincrement();
             $table->foreignId('bookReview_id')->nullable(false);
             $table->foreign('bookReview_id')->references('id')->on('bookReviews');
-            $table->foreignId('reviewRate_id')->nullable(false);
             $table->foreign('reviewRate_id')->references('id')->on('reviewRates')->cascadeOnUpdate()->cascadeOnDelete();
             $table->timestamps();
         });
@@ -26,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('reviewBookRates');
+        Schema::dropIfExists('bookReviewRates');
     }
 };

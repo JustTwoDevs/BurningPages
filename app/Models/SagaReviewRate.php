@@ -9,7 +9,7 @@ class SagaReviewRate extends Model
 {
     use HasFactory;
 
-    protected $table = 'reviewSagaRates';
+    protected $table = 'sagaReviewRates';
 
     protected $fillable = [
       

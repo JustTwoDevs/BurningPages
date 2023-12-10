@@ -11,17 +11,17 @@ class BookReviewRateSeeder extends Seeder
     public function run(): void
     {
             
-        DB::table('bookReviewRates')->insert([
+        DB::table('reviewBookRates')->insert([
 
            'reviewRate_id' => 1,
               'bookReview_id' => 1,
           ]);
-          DB::table('bookReviewRates')->insert([
+          DB::table('reviewBookRates')->insert([
            'reviewRate_id' => 2,
               'bookReview_id' => 1,
           ]);
   
-          DB::table('bookReviewRates')->insert([
+          DB::table('reviewBookRates')->insert([
         'reviewRate_id' => 3,
               'bookReview_id' => 2,
           ]);
