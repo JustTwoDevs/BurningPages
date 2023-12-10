@@ -37,6 +37,14 @@ class SagaReviewRateController extends Controller
     {
         $user = auth()->user();
         $registeredUser = RegisteredUser::query()->where('user_id', $user['id'])->first();
+        // si ya existe una reviewrate de este usuario para esta review, no se le permite crear otro
+        $bookSagaReviewRate = SagaReviewRate::with('bookSagaReview', 'reviewRate')->orderBy('id', 'asc')->get();
+        $bookSagaReviewRate = $bookSagaReviewRate->filter(function ($review) use ($bookSagaReviewId, $registeredUser){
+            return  $review->bookSagaReview_id == $bookSagaReviewId && $review->reviewRate->user_id == $registeredUser->id;
+        });
+        if ($bookSagaReviewRate->count() > 0) {
+            return response()->json(['message' => 'user already has a review rate for this review'], 400);
+        }
         $data = [
             'value' => $request->input('value'),
             'user_id' => $registeredUser->id,
@@ -47,8 +55,12 @@ class SagaReviewRateController extends Controller
             'reviewRate_id' => $reviewRate->id,
         ];
         $bookSagaReviewRate = SagaReviewRate::create($data);
-      
-        $bookSagaReviewRate->load([ 'bookSagaReview']);
+        $bookSagaReviewRate->load('bookSagaReview.review.user', 'reviewRate');
+        $user = $bookSagaReviewRate->bookSagaReview->review->user;
+        if ($bookSagaReviewRate->reviewRate->value != null) {
+            $user->likeDifference = $user->likeDifference = $bookSagaReviewRate->reviewRate->value == 1 ? $user->likeDifference + 1 : $user->likeDifference - 1;
+            $user->save();
+        }
 
         return response()->json(['bookSagaReview' => new SagaReviewRateResource($bookSagaReviewRate)], 201);
     }

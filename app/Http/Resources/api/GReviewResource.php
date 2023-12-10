@@ -26,7 +26,6 @@ class GReviewResource extends JsonResource
             'rate' => $this->rate,
             'content'  => $this->content,
             'state' => $this->state,
-          //  'reviewrates' => $this->load('reviewRates'),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
@@ -48,57 +47,33 @@ class GReviewResource extends JsonResource
         return $formattedReview;
     }
 
-    public function countLikes ()
-    {
-       $reviewRates = null;
-       if ($this->isbook()){
-        $reviewRates = BookReview::query()->where('review_id', $this->id);
+    public function countLikes()
+{
+    $reviewRates = null;
+    $relationName = $this->isbook() ? 'reviewRates' : 'reviewSagaRates';
 
-        $reviewRates = BookReview::query()->where('review_id', $this->id);
+    $reviewRates = $this->isbook()
+        ? BookReview::query()->where('review_id', $this->id)
+        : BookSagaReview::query()->where('review_id', $this->id);
 
-     $likes=   $reviewRates->whereHas('reviewRates', function ($query) {
-            $query->whereHas('reviewRate', function ($q) {
-                $q->where('value', 1);
-            });
+    $likes = $reviewRates->whereHas($relationName, function ($query) {
+        $query->whereHas('reviewRate', function ($q) {
+            $q->where('value', 1);
         });
+    })->count();
 
-    $dislikes = $reviewRates->whereHas('reviewRates', function ($query) {
-            $query->whereHas('reviewRate', function ($q) {
-                $q->where('value', 0);
-            });
+    $dislikes = $reviewRates->whereHas($relationName, function ($query) {
+        $query->whereHas('reviewRate', function ($q) {
+            $q->where('value', 0);
         });
-        
-  
-       } else{
-        $reviewRates = BookSagaReview::query()->where('review_id', $this->id);
+    })->count();
 
-      $likes =  $reviewRates->whereHas('reviewSagaRates', function ($query) {
-            $query->whereHas('reviewRate', function ($q) {
-                $q->where('value', 1);
-            });
-        });
-        
-    $dislikes = $reviewRates->whereHas('reviewSagaRates', function ($query) {
-            $query->whereHas('reviewRate', function ($q) {
-                $q->where('value', 0);
-            });
-        });
-       }
-     
-        return [
-            'likes' => $likes->count(),
-            'dislikes' => $dislikes->count(),
-        ];
-    }
+    return [
+        'likes' => $likes,
+        'dislikes' => $dislikes,
+    ];
+}
 
-        
-        
-      
-        
-    //     $reviewRates->whereHas('reviewSagaRates', function ($query) {
-    //         $query->count('value', 1);
-    //     });
-    
 
 
 }
