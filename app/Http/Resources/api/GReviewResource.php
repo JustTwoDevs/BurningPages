@@ -5,7 +5,10 @@ namespace App\Http\Resources\api;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Models\BookReview;
+use App\Models\BookReviewRate;
+use App\Models\SagaReviewRate;
 use App\Models\BookSagaReview;
+
 
 class GReviewResource extends JsonResource
 {
@@ -39,6 +42,42 @@ class GReviewResource extends JsonResource
             $formattedReview['bookSaga'] = $bookSaga->bookSaga;
         }
 
+        $formattedReview['likes'] = $this->countLikes();
+      
+
+
         return $formattedReview;
     }
+
+    public function countLikes ()
+    {
+       $reviewRates = null;
+       if ($this->isbook()){
+        $reviewRates = BookReview::query()->where('review_id', $this->id);
+        $reviewRates->with('reviewRates');
+        $reviewRates->whereHas('reviewRates', function ($query) {
+            $query->with('reviewRate')
+            ->whereHas('reviewRate', function ($query) {
+                $query->count('value', 1);
+             });
+         });
+
+       } else{
+        $reviewRates = BookSagaReview::query()->where('review_id', $this->id);
+        $reviewRates->with('reviewSagaRates');
+        $reviewRates->whereHas('reviewSagaRates', function ($query) {
+            $query->with('reviewRate')
+            ->whereHas('reviewRate', function ($query) {
+                $query->count('value', 1);
+             });
+         });
+    //     $reviewRates->whereHas('reviewSagaRates', function ($query) {
+    //         $query->count('value', 1);
+    //     });
+        }
+       $reviewRates =$reviewRates->get();
+        return $reviewRates;
+    }
+
+
 }

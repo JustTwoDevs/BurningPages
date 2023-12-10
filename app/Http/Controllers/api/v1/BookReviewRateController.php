@@ -29,6 +29,7 @@ class BookReviewRateController extends Controller
      */
     public function store(Request $request, string $bookReviewId)
     {
+
         $user = auth()->user();
         $registeredUser = RegisteredUser::query()->where('user_id', $user['id'])->first();
         $data = [
@@ -36,11 +37,15 @@ class BookReviewRateController extends Controller
             'user_id' => $registeredUser->id,
         ];
         $reviewRate = ReviewRate::create($data);
+      
         $data = [
             'bookReview_id' => $bookReviewId,
             'reviewRate_id' => $reviewRate->id,
         ];
         $bookReviewRate = BookReviewRate::create($data);
+        // cada vez que se crea una review rate se actualiza 
+        // el atributo like difference al usuario dueño de la review
+
       
         $bookReviewRate->load([ 'bookReview', 'reviewRate']);
 

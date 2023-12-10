@@ -38,7 +38,6 @@ class ReviewRateSeeder extends Seeder
           DB::table('reviewRates')->insert([
               'value' => 0,
               'user_id' => 2,
-            
           ]);
   
           DB::table('reviewRates')->insert([

@@ -28,10 +28,10 @@ class ReviewRate extends Model
         return BookReviewRate::query()->where('reviewRate_id', $this->id)->exists();
     }
     
-
     public function isSaga(): bool
     {
         return SagaReviewRate::query()->where('reviewRate_id', $this->id)->exists();
     }
-   
+
+
 }

@@ -107,6 +107,13 @@ class BookReviewController extends Controller
     {
         $user = auth()->user();
         $registeredUser = RegisteredUser::query()->where('user_id', $user['id'])->first();
+        // validar si en todas las bookReviews de este libro, el usuario ya tiene una review
+        $bookSagaReview = BookReview::where('book_id', $bookId)->where('user_id', $registeredUser->id)->first();
+        if ($bookSagaReview) {
+            return response()->json(['message' => 'user already made a review of this saga'], 400);
+        }
+
+        // primero se crea la review y luego se crea la bookReview
         $data = [
             'content' => $request->input('content'),
             'rate' => $request->input('rate'),

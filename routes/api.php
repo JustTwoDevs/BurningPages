@@ -75,16 +75,14 @@ Route::middleware(['auth:sanctum'])->group(function () {
          * 3. crear una reseña de una saga 
          * 5. Publicar una reseña
          * 6. Poner en borrador una reseña 
-         * 7. Editar una reseña  
-         * 8. Eliminar una reseña 
-         * 9. Obtener una reseña por el id
+         * 7. Eliminar una reseña 
+         * 8. Obtener una reseña por el id
          */
         Route::get('v1/myprofile/reviews', [ReviewController::class, 'indexMyReviews']);
         Route::post('v1/books/{bookId}/bookReviews', [BookReviewController::class, 'store']);
         Route::post('v1/bookSagas/{bookSaga}/bookSagaReviews', [BookSagaReviewController::class, 'store']);
         Route::patch('v1/reviews/{review}/public', [ReviewController::class, 'publishRegistered']);
         Route::patch('v1/reviews/{review}/draft', [ReviewController::class, 'draft']);
-        Route::put('v1/reviews/{review}', [ReviewController::class, 'update']);
         Route::delete('v1/reviews/{review}', [ReviewController::class, 'destroy']);
         Route::get('v1/reviews/{review}/mine', [ReviewController::class, 'showRegistered']);
 

@@ -9,7 +9,7 @@ class SagaReviewRate extends Model
 {
     use HasFactory;
 
-    protected $table = 'sagaReviewRates';
+    protected $table = 'reviewSagaRates';
 
     protected $fillable = [
       
@@ -27,6 +27,5 @@ class SagaReviewRate extends Model
     {
         return $this->belongsTo(ReviewRate::class, 'reviewRate_id');
     }
-
 
 }
