@@ -8,50 +8,13 @@ use Illuminate\Http\Request;
 use App\Http\Resources\api\GReviewResource;
 use App\Http\Requests\api\v1\ReviewUpdateRequest;
 use App\Models\RegisteredUser;
+use App\Models\BookReview;
+use App\Models\BookReviewRate;
+use App\Models\BookSagaReview;
 
 class ReviewController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {   
-
-        $reviews = Review::with('user')->orderBy('user_id', 'asc')->get();
-        $publishedReviews = $reviews->filter(function ($review) {
-            return $review->state === 'published';
-        });
-        $query = request()->query();
-       
-        if (isset($query['content'])) {
-           
-            $search = str_replace('-', ' ', $query['content']);
-           
-            $publishedReviews = $publishedReviews->where(function ($query) use ($search) {
-                $query->where('content', 'like', '%' . $search . '%');
-            });
-            
-        }
-        
-        if (isset($query['rate'])) {
-            $rate = explode(',', $query['rate']);
-            $publishedReviews = $publishedReviews->whereBetween($rate, $rate);
-          
-        }
-
-        if (isset($query['state'])) {
-            $search = str_replace('-', ' ', $query['state']);
-        
-            $publishedReviews = $publishedReviews->where(function ($q) use ($search) {
-                $q->where('state', 'like',  $search );
-            });
-        }
-
     
-        
-
-        return response()->json(['reviews' => GReviewResource::collection($publishedReviews)], 200);
-    }
 
     public function indexMyReviews()
     {
@@ -65,12 +28,45 @@ class ReviewController extends Controller
         return response()->json(['reviews' =>  GReviewResource::collection($registeredUser->reviews)], 200);
     }
 
-    public function indexAdmin(){
-        $reviews = Review::with('user')->orderBy('user_id', 'asc')->get();
-        return response()->json(['reviews' => GReviewResource::collection($reviews)], 200);
-    }
+    public function indexAdmin()
+    {
+        $reviews = Review::with('user')->orderBy('user_id', 'asc');
+    
+        $query = request()->query();
+    
+        if (isset($query['content'])) {
+            $search = trim(str_replace('-', ' ', $query['content']));
+    
+            $reviews->where(function ($query) use ($search) {
+                $query->where('content', 'like', '%' . $search . '%');
+            });
+        }
+    
+        if (isset($query['state'])) {
+            $search = str_replace('-', ' ', $query['state']);
+    
+            $reviews->where(function ($q) use ($search) {
+                $q->where('state', $search);
+            });
+        }
 
-    public function publishAdmin(Request $request, Review $review)
+        if (isset($query['rate'])) {
+            $rate = explode(',', $query['rate']);
+    
+            if (count($rate) == 2) {
+                $reviews->whereBetween('rate', $rate);
+            } else {
+                $reviews->where('rate', '=', $rate[0]);
+            }
+        }
+    
+        $result = $reviews->get();
+    
+        return response()->json(['reviews' => GReviewResource::collection($result)], 200);
+    }
+    
+
+    public function publishAdmin( Review $review)
     {
         if ($review->state === 'occult') {
             $review->state = 'published';
@@ -117,9 +113,26 @@ class ReviewController extends Controller
      */
     public function destroy(Review $review)
     {
+        if ($review->isbook()){
+       $bookReviews= BookReview::where('review_id', $review->id)->get();
+       foreach($bookReviews as $bookReview){
+        BookReviewRate::where('bookReview_id', $bookReview->id)->delete();
+        $bookReview->delete();
+       }
+        } else {
+            $sagaReviews= BookSagaReview::where('review_id', $review->id)->get;
+            foreach($sagaReviews as $sagaReview){
+             BookSagaReview::where('bookSagaReview_id', $sagaReview->id)->delete();
+             $sagaReview->delete();
+            }
+            
+        }
+
         $review->delete();
+    
         return response(null, 204);
     }
+    
 
    
 
@@ -129,6 +142,9 @@ class ReviewController extends Controller
      */
     public function show(Review $review)
     {
+        if (!$review) {
+            return response()->json(['message' => 'review not found'], 404);
+        }
         $review->load([ 'user']);
         if ($review->state === 'published') {
             return response()->json(['review' => new GReviewResource($review)], 200);
@@ -140,6 +156,9 @@ class ReviewController extends Controller
 
     public function showRegistered(Review $review)
     {
+        if (!$review) {
+            return response()->json(['message' => 'review not found'], 404);
+        }
         $user = auth()->user();
         $registeredUser = RegisteredUser::query()->where('user_id', $user['id'])->first();
 
@@ -154,6 +173,9 @@ class ReviewController extends Controller
     }
     public function showAdmin(Review $review)
     {
+        if (!$review) {
+            return response()->json(['message' => 'review not found'], 404);
+        }
         $review->load([ 'user']);
     
         return response()->json(['review' => new GReviewResource($review)], 200);

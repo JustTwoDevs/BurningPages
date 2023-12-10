@@ -21,6 +21,8 @@ class RegisteredUser extends Model
     {
         return $this->hasMany(Review::class, 'user_id');
     }
+    
+
     public function reviewRates()
     {
         return $this->hasMany(ReviewRate::class, 'user_id');
