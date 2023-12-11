@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\api\v1;
 
 use App\Http\Controllers\Controller;
-use App\Models\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
@@ -17,7 +16,7 @@ class AuthController extends Controller
         // para hacer la autenticación: "email" y "password".
         try {
             $request->validate([
-                'username' => 'required|string|min:3|max:255',
+                'username' => 'required|string|min:5|max:255',
                 'password' => 'required|string|min:3|max:255',
             ]);
         } catch (ValidationException $e) {
@@ -36,9 +35,6 @@ class AuthController extends Controller
         // Una vez autenticado, obtener la información del usuario en sesión.
         $tokenType = 'Bearer';
         $user = User::where('username', $request['username'])->first();
-        if (!$user) {
-            $user = Admin::where('username', $request['username'])->firstOrFail();
-        }
         // Borrar los tokens anteriores (tipo Bearer) del usuario para
         // evitar, en este caso, tenga mas de uno del mismo tipo.
         $user->tokens()->where('name', $tokenType)->delete();

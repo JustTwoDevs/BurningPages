@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             NationalitySeeder::class,
             AuthorSeeder::class,
             BookSeeder::class,
+            AdminSeeder::class,
             AdminUserSeeder::class,
             RegisteredUserSeeder::class,
             GenreSeeder::class,
@@ -37,7 +38,6 @@ class DatabaseSeeder extends Seeder
             BookReviewRateSeeder::class,
             SagaReviewRateSeeder::class,
             BackingRequestSeeder::class,
-          
         ]);
     }
 }

@@ -17,7 +17,7 @@ class RegisteredUserFactory extends Factory
     public function definition(): array
     {
         return [
-            'rank' => fake()->randomElement(['bronze', 'silver', 'gold']),
+            'likeDifference' => fake()->numberBetween(-100, 400),
             'verified' => fake()->boolean(),
         ];
     }

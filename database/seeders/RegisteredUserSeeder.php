@@ -14,6 +14,6 @@ class RegisteredUserSeeder extends Seeder
     public function run(): void
     {
         User::factory()->count(20)->create();
-        RegisteredUser::factory()->count(20)->userId(3, 23)->create();
+        RegisteredUser::factory()->count(20)->userId(4, 24)->create();
     }
 }

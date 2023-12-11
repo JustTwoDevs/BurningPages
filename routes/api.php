@@ -31,29 +31,18 @@ use App\Http\Controllers\api\v1\BookReviewRateController;
 |
 */
 
-
-
-/*
- * Rutas de usuarios.
- */
-
-
-// Rutas de administrador.
-Route::get("v1/users", [UserController::class, 'index']);
-Route::get("v1/users/{userId}", [UserController::class, 'show']);
-Route::put("v1/users/{userId}", [UserController::class, 'update']);
-Route::get("v1/adminUsers", [AdminUserController::class, 'index']);
-Route::get("v1/adminUsers/{userId}", [AdminUserController::class, 'show']);
-Route::post("v1/adminUsers", [AdminUserController::class, 'store']);
-Route::put("v1/adminUsers/{userId}", [AdminUserController::class, 'update']);
-Route::delete("v1/adminUsers/{userId}", [AdminUserController::class, 'destroy']);
-
-
 Route::middleware(['auth:sanctum'])->group(function () {
 
-    // Rutas a las que solo puede acceder el admin.
-    // Route::middleware('can:admin')->group(function () {
-    // });
+    Route::middleware('can:superAdmin')->group(function () {
+        Route::get("v1/users", [UserController::class, 'index']);
+        Route::get("v1/users/{userId}", [UserController::class, 'show']);
+        Route::put("v1/users/{userId}", [UserController::class, 'update']);
+        Route::get("v1/adminUsers", [AdminUserController::class, 'index']);
+        Route::get("v1/adminUsers/{userId}", [AdminUserController::class, 'show']);
+        Route::post("v1/adminUsers", [AdminUserController::class, 'store']);
+        Route::put("v1/adminUsers/{userId}", [AdminUserController::class, 'update']);
+        Route::delete("v1/adminUsers/{userId}", [AdminUserController::class, 'destroy']);
+    });
 
 
     // Rutas a las que solo puede acceder el usuario registrado.
@@ -70,12 +59,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
         /**
          * reviews
          * Rutas de usuario registrado:
-         * 1. Obtener todas mis reseñas 
-         * 2. Crear una reseña de un libro 
-         * 3. crear una reseña de una saga 
+         * 1. Obtener todas mis reseñas
+         * 2. Crear una reseña de un libro
+         * 3. crear una reseña de una saga
          * 5. Publicar una reseña
-         * 6. Poner en borrador una reseña 
-         * 7. Eliminar una reseña 
+         * 6. Poner en borrador una reseña
+         * 7. Eliminar una reseña
          * 8. Obtener una reseña por el id
          */
         Route::get('v1/myprofile/reviews', [ReviewController::class, 'indexMyReviews']);
@@ -86,8 +75,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::delete('v1/reviews/{review}', [ReviewController::class, 'destroy']);
         Route::get('v1/reviews/{review}/mine', [ReviewController::class, 'showRegistered']);
 
-        
-       
+
+
         /**
          * BackingRequests
          * Rutas de usuario registrado:
@@ -100,11 +89,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
          * 1. crear una calificacion a una reseña de un libro
          * 2. crear una calificacion a una reseña de una saga
          * 3. actualizar una calificacion a una reseña
-         * 4. ver todas mis calificaciones 
-         * 5. eliminar una calificacion a una reseña 
-         * 
+         * 4. ver todas mis calificaciones
+         * 5. eliminar una calificacion a una reseña
+         *
          */
-       
+
         Route::post('v1/bookReviews/{review}/reviewRates', [BookReviewRateController::class, 'store']);
         Route::post('v1/bookSagaReviews/{review}/reviewRates', [SagaReviewRateController::class, 'store']);
         Route::put('v1/reviewRates/{reviewRate}', [ReviewRateController::class, 'update']);
@@ -113,7 +102,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     });
 
     // Rutas a las que puede acceder el usuario administrador y el Admin.
-    Route::middleware('can:adminOrAdminUser')->group(function () {
+    Route::middleware('can:superAdminOrAdminUser')->group(function () {
 
         /**
          * registeredUsers
@@ -161,8 +150,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
          * 3. Obtener todas las reseñas de un libro
          * 4. Publicar una reseña de un libro
          * 5. Ocultar una reseña de un libro
-         * 6. Obtener una reseña por su id 
-         * 7. Obtener todas las reseñas publicas 
+         * 6. Obtener una reseña por su id
+         * 7. Obtener todas las reseñas publicas
          */
         Route::get('v1/allReviews', [ReviewController::class, 'indexAdmin']);
         Route::get('v1/users/{user}/allReviews', [ReviewController::class, 'indexByUserAdmin']);
@@ -172,9 +161,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::patch('v1/reviews/{review}/publish', [ReviewController::class, 'publishAdmin']);
         Route::patch('v1/reviews/{review}/hide', [ReviewController::class, 'occult']);
         Route::get('v1/reviews', [ReviewController::class, 'index']);
-    
-       
-     
+
+
+
         /**
          * BackingRequests
          * Rutas de usuario administrativo:
@@ -281,7 +270,7 @@ Route::get('v1/reviews/{review}', [ReviewController::class, 'show']);
 /**
  * Calificaciones de una reseña
  * Rutas publicas
- * ver una calificacion especifica 
+ * ver una calificacion especifica
  * ver las calificaciones de una reseña de un libro
  * ver las calificaciones de una reseña de una saga
  */

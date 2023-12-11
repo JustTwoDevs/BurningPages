@@ -109,6 +109,9 @@ class RegisteredUserController extends Controller
 
 
         $users = $users->get();
+        foreach ($users as $user) {
+            $user->rank = $user->rank();
+        }
         return response()->json(['users' => $users]);
     }
 
@@ -246,6 +249,7 @@ class RegisteredUserController extends Controller
             return response()->json(['error' => 'User not found'], 404);
         }
         $registeredUser = RegisteredUser::query()->where('user_id', $user['id'])->with('user.nationality')->first();
+        $registeredUser->rank = $registeredUser->rank();
         return response()->json(['myProfile' => $registeredUser]);
     }
 
@@ -305,6 +309,6 @@ class RegisteredUserController extends Controller
     {
         $user = auth()->user();
         $user->delete();
-        return response()->json(['message' => 'User deleted successfully']);
+        return response()->json(['message' => 'profile deleted successfully']);
     }
 }
