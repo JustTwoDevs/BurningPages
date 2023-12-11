@@ -230,6 +230,7 @@ class RegisteredUserController extends Controller
         if ($registeredUser == null) {
             return response()->json(['error' => 'User not found'], 404);
         }
+        $registeredUser->rank = $registeredUser->rank();
         return response()->json(['registeredUser' => $registeredUser]);
     }
 
