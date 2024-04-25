@@ -14,20 +14,20 @@ use App\Models\Review;
 
 class BookSagaReviewController extends Controller
 {
- 
-        public function indexByBookSaga( BookSaga $bookSaga)
+
+    public function indexByBookSaga(BookSaga $bookSaga)
     {
         if (!$bookSaga) {
             return response()->json(['message' => 'book saga not found'], 404);
         }
         $bookReviews = BookSagaReview::with('bookSaga', 'reviewSagaRates')->orderBy('id', 'asc')->get();
-      
-        $publishedReviews = $bookReviews->filter(function ($review) use ($bookSaga){
+
+        $publishedReviews = $bookReviews->filter(function ($review) use ($bookSaga) {
             return  $review->bookSaga_id == $bookSaga->id && $review->review->state === 'published';
         });
         return response()->json(['sagaReviews' => SagaReviewResource::collection($publishedReviews)], 200);
     }
-    
+
 
     public function indexBookSagaReviews()
     {
@@ -40,15 +40,15 @@ class BookSagaReviewController extends Controller
         return response()->json(['reviews' => $registeredUser->sagaReviews], 200);
     }
 
-    public function indexByBookSagaAdmin( BookSaga $bookSaga)
+    public function indexByBookSagaAdmin(BookSaga $bookSaga)
     {
         if (!$bookSaga) {
             return response()->json(['message' => 'book saga not found'], 404);
         }
         $bookReviews = BookSagaReview::with('bookSaga', 'reviewSagaRates')->orderBy('id', 'asc')->get();
-      
-        $publishedReviews = $bookReviews->filter(function ($review) use ($bookSaga){
-            return  $review->bookSaga_id == $bookSaga->id ;
+
+        $publishedReviews = $bookReviews->filter(function ($review) use ($bookSaga) {
+            return  $review->bookSaga_id == $bookSaga->id;
         });
         return response()->json(['sagaReviews' => SagaReviewResource::collection($publishedReviews)], 200);
     }
@@ -68,20 +68,19 @@ class BookSagaReviewController extends Controller
         return response()->json(['reviews' => $publishedReviews], 200);
     }
 
-    
-
-
 
     /**
      * Store a newly created resource in storage.
      */
     public function store(SagaReviewStoreRequest $request, string $bookSaga)
     {
-       
+
         $user = auth()->user();
         $registeredUser = RegisteredUser::query()->where('user_id', $user['id'])->first();
-       // validar si el usuario ya hizo una review de esta saga 
-        $bookSagaReview = BookSagaReview::where('bookSaga_id', $bookSaga)->where('user_id', $registeredUser->id)->first();
+        // validar si el usuario ya hizo una review de esta saga 
+        $bookSagaReview = BookSagaReview::where('bookSaga_id', $bookSaga)->whereHas('review', function ($query) use ($registeredUser) {
+            $query->where('user_id', $registeredUser->id);
+        })->first();
         if ($bookSagaReview) {
             return response()->json(['message' => 'user already made a review of this saga'], 400);
         }
@@ -100,16 +99,4 @@ class BookSagaReviewController extends Controller
 
         return response()->json(['sagaReview' => new SagaReviewResource($bookSagaReview)], 201);
     }
-
-  
-
-
-  
-
-
-   
-
-
-  
-
 }

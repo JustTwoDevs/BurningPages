@@ -9,14 +9,14 @@ class ReviewRate extends Model
 {
     use HasFactory;
 
-    
+
     protected $table = 'reviewRates';
 
     protected $fillable = [
-      
-       'value',
-         'user_id',
-        
+
+        'value',
+        'user_id',
+
     ];
     public function user()
     {
@@ -27,11 +27,9 @@ class ReviewRate extends Model
     {
         return BookReviewRate::query()->where('reviewRate_id', $this->id)->exists();
     }
-    
+
     public function isSaga(): bool
     {
         return SagaReviewRate::query()->where('reviewRate_id', $this->id)->exists();
     }
-
-
 }

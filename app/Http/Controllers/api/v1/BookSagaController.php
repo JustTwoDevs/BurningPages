@@ -85,7 +85,7 @@ class BookSagaController extends Controller
             ->join('bookWriters', 'bookWriters.book_id', '=', 'bookCollections.book_id')
             ->where('bookWriters.author_id', '=', $author)
             ->distinct()
-            - with('books')
+            ->with('books')
             ->get();
         return response()->json(['bookSagas' => BookSagaResource::collection($bookSagas)], 200);
     }
