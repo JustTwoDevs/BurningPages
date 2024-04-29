@@ -31,6 +31,7 @@ class BookResource extends JsonResource
             'Order_Saga' => $this->whenPivotLoaded('bookCollections', function () {
                 return $this->pivot->order;
             }),
+            'Cover' => $this->image_path,
         ];
     }
 }

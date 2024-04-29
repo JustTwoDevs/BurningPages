@@ -20,6 +20,7 @@ return new class extends Migration
             $table->double('burningmeter')->nullable(false);
             $table->double('readersScore')->nullable(false);
             $table->string('buyLink', 255)->nullable(false)->unique();
+            $table->string('image_path', 255)->nullable(true);
             $table->timestamps();
         });
     }
