@@ -17,6 +17,7 @@ class BookSaga extends Model
         'sinopsis',
         'burningmeter',
         'readersScore',
+        'image_path',
     ];
 
     public function books(): BelongsToMany
@@ -24,10 +25,11 @@ class BookSaga extends Model
         return $this->belongsToMany(Book::class, 'bookCollections', 'bookSaga_id', 'book_id')->withPivot('order');
     }
 
-    public function reviews(){
+    public function reviews()
+    {
         return $this->hasMany(BookSagaReview::class, 'bookSaga_id');
     }
-   
+
 
     public function getGenresAttribute()
     {

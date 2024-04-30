@@ -118,6 +118,13 @@ class BookSagaController extends Controller
     {
         $request['burningmeter'] = 0;
         $request['readersScore'] = 0;
+
+        if ($request->hasFile('cover')) {
+            $path = $request->file('cover')->store('public');
+            $path = str_replace('public', 'storage', $path);
+            $request['image_path'] = $path;
+        }
+
         $bookSaga = BookSaga::create($request->all());
         if (isset($request->books)) {
             $bookSaga->books()->attach($request->books, ['order' => 1]);
@@ -163,6 +170,12 @@ class BookSagaController extends Controller
      */
     public function update(BookSagaUpdateRequest $request, BookSaga $bookSaga)
     {
+        if ($request->hasFile('cover')) {
+            $path = $request->file('cover')->store('public');
+            $path = str_replace('public', 'storage', $path);
+            $request['image_path'] = $path;
+        }
+
         $bookSaga->update($request->all());
         return response()->json(['bookSaga' => new BookSagaResource($bookSaga)], 200);
     }

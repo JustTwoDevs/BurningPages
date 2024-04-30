@@ -17,6 +17,7 @@ return new class extends Migration
             $table->mediumText('sinopsis')->nullable(false);
             $table->double('burningmeter')->nullable(false);
             $table->double('readersScore')->nullable(false);
+            $table->string('image_path', 255)->nullable(true);
             $table->timestamps();
         });
     }
