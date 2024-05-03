@@ -18,6 +18,7 @@ class ReviewRateController extends Controller
 
         return response()->json(['reviewRate' => ReviewRateResource::collection($reviewRates)], 200);
     }
+    
     public function indexMyReviewRates(){
         $user = auth()->user();
         if (!$user) {

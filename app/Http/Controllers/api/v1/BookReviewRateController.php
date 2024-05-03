@@ -12,6 +12,8 @@ use App\Models\BookReview;
 
 class BookReviewRateController extends Controller
 {
+
+    
     /**
      * Display a listing of the resource.
      */
