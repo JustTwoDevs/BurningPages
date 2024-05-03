@@ -20,6 +20,7 @@ class Book extends Model
         'burningmeter',
         'readersScore',
         'buyLink',
+        'image_path',
     ];
 
     public function genres(): BelongsToMany
@@ -36,9 +37,8 @@ class Book extends Model
     {
         return $this->belongsToMany(BookSaga::class, 'bookCollections', 'book_id', 'bookSaga_id')->withPivot('order');
     }
-    public function reviews(){
+    public function reviews()
+    {
         return $this->hasMany(BookReview::class, 'book_id');
     }
-   
-    
 }

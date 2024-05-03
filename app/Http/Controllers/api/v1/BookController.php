@@ -109,6 +109,13 @@ class BookController extends Controller
 
         $books = $books->get();
 
+        // Cargar las imagenes si es que tienen la ruta
+        $books->each(function ($book) {
+            if ($book->image_path) {
+                $book->image_path = url('storage/' . $book->image_path);
+            }
+        });
+
         return response()->json(['books' =>  BookResource::collection($books)], 200);
     }
 
@@ -139,9 +146,15 @@ class BookController extends Controller
     {
         $request['burningmeter'] = 0;
         $request['readersScore'] = 0;
+        if ($request->hasFile('cover')) {
+            $path = $request->file('cover')->store('public');
+            $path = str_replace('public', 'storage', $path);
+            $request['image_path'] = $path;
+        }
         $book = Book::create($request->all());
         if ($request->authors) $book->authors()->attach($request->authors);
         if ($request->genres) $book->genres()->attach($request->genres);
+
         return response()->json(['book' => $book], 201);
     }
 
@@ -179,6 +192,12 @@ class BookController extends Controller
      */
     public function update(BookUpdateRequest $request, Book $book)
     {
+        if ($request->hasFile('cover')) {
+            $path = $request->file('cover')->store('public');
+            $path = str_replace('public', 'storage', $path);
+            $request['image_path'] = $path;
+        }
+
         $book->update($request->all());
         return response()->json(['book' => new BookResource($book)], 200);
     }

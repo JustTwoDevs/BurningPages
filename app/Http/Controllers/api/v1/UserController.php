@@ -75,7 +75,7 @@ class UserController extends Controller
 
         $users = $users->get();
         foreach ($users as $user) {
-            $user->role = $user->isAdmin() ? 'admin' : 'registered';
+            $user->role = $user->role();
         }
         return response()->json(['users' => $users]);
     }
@@ -99,9 +99,10 @@ class UserController extends Controller
             if (!$user) {
                 return response()->json(['message' => 'user not found'], 404);
             }
+            $user->rank = $user->rank();
         }
         $user->load('user.nationality');
-        $user->role = $user instanceof AdminUser ? 'admin' : 'registered';
+        $user->role = $user->user->role();
         return response()->json(['user' => $user]);
     }
 

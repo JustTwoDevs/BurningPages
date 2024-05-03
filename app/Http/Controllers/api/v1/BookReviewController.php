@@ -29,7 +29,7 @@ class BookReviewController extends Controller
     public function index()
     {
         $bookReviews = BookReview::with('book', 'reviewRates')->orderBy('id', 'asc')->get();
-    
+
         $publishedReviews = $bookReviews->filter(function ($review) {
             return $review->review->state === 'published';
         });
@@ -46,7 +46,7 @@ class BookReviewController extends Controller
             $query->where('isBook', true);
         }])->where('user_id', $user['id'])->first();
         $registeredUser->load('reviews', 'reviews.user');
-        
+
 
         return response()->json(['reviews' => new GReviewResource($registeredUser->reviews)], 200);
     }
@@ -80,12 +80,12 @@ class BookReviewController extends Controller
     }
 
 
-    public function indexByBook( Book $book)
+    public function indexByBook(Book $book)
     {
 
         $bookReviews = BookReview::with('book', 'reviewRates')->orderBy('id', 'asc')->get();
-    
-        $publishedReviews = $bookReviews->filter(function ($review) use ($book){
+
+        $publishedReviews = $bookReviews->filter(function ($review) use ($book) {
             return $review->book->id === $book->id && $review->review->state === 'published';
         });
         return response()->json(['bookReviews' => ReviewResource::collection($publishedReviews)], 200);
@@ -94,8 +94,8 @@ class BookReviewController extends Controller
     public function indexByBookRegistered(Book $book)
     {
         $bookReviews = BookReview::with('book', 'reviewRates')->orderBy('id', 'asc')->get();
-    
-        $publishedReviews = $bookReviews->filter(function ($review) use ($book){
+
+        $publishedReviews = $bookReviews->filter(function ($review) use ($book) {
             return $review->book->id === $book->id;
         });
         return response()->json(['bookReviews' => ReviewResource::collection($publishedReviews)], 200);
@@ -108,7 +108,9 @@ class BookReviewController extends Controller
         $user = auth()->user();
         $registeredUser = RegisteredUser::query()->where('user_id', $user['id'])->first();
         // validar si en todas las bookReviews de este libro, el usuario ya tiene una review
-        $bookSagaReview = BookReview::where('book_id', $bookId)->where('user_id', $registeredUser->id)->first();
+        $bookSagaReview = BookReview::where('book_id', $bookId)->whereHas('review', function ($query) use ($registeredUser) {
+            $query->where('user_id', $registeredUser->id);
+        })->first();
         if ($bookSagaReview) {
             return response()->json(['message' => 'user already made a review of this saga'], 400);
         }
@@ -194,7 +196,7 @@ class BookReviewController extends Controller
         return response()->json(['message' => 'review is not published'], 400);
     }
 
-    public function draft( BookReview $review)
+    public function draft(BookReview $review)
     {
         if ($review->state === 'published') {
             $review->state = 'draft';

@@ -33,6 +33,7 @@ class BookStoreRequest extends FormRequest
             'authors.*' => 'exists:authors,id',
             'genres' => 'array|min:1',
             'genres.*' => 'exists:genres,id',
+            'cover' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ];
     }
 
@@ -67,6 +68,9 @@ class BookStoreRequest extends FormRequest
             'genres.array' => 'The genres must be an array.',
             'genres.min' => 'The genres must have at least 1 item.',
             'genres.*.exists' => 'The selected genres is invalid.',
+            'cover.image' => 'The cover must be an image.',
+            'cover.mimes' => 'The cover must be a file of type: jpeg, png, jpg, gif, svg.',
+            'cover.max' => 'The cover may not be greater than 2048 kilobytes.',
         ];
     }
 }

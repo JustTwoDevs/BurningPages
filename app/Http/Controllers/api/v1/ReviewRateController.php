@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\api\v1;
+
 use App\Http\Controllers\Controller;
 use App\Http\Requests\api\v1\ReviewRatesStoreRequest;
 use App\Http\Resources\api\ReviewRateResource;
@@ -18,24 +19,24 @@ class ReviewRateController extends Controller
 
         return response()->json(['reviewRate' => ReviewRateResource::collection($reviewRates)], 200);
     }
-    
-    public function indexMyReviewRates(){
+    public function indexMyReviewRates()
+    {
         $user = auth()->user();
         if (!$user) {
             return response()->json(['message' => 'user not found'], 404);
         }
-       
+
         $reviewRates = ReviewRate::with('user')->orderBy('user_id', 'asc')->get();
-      $filteredRates = $reviewRates->filter(function ($reviewRate) use ($user){
+        $filteredRates = $reviewRates->filter(function ($reviewRate) use ($user) {
             $result = $reviewRate->user->id == $user->id;
             return $result;
-
         });
-        
+
         return response()->json(['reviewRates' => ReviewRateResource::collection($filteredRates)], 200);
     }
 
-    public function update(ReviewRatesStoreRequest $request, string $reviewRate){
+    public function update(ReviewRatesStoreRequest $request, string $reviewRate)
+    {
         $reviewRate = ReviewRate::find($reviewRate);
         if (!$reviewRate) {
             return response()->json(['message' => 'review rate not found'], 404);
@@ -43,16 +44,16 @@ class ReviewRateController extends Controller
         $reviewRate->update($request->except('user_id'));
         return response()->json(['reviewRate' => new ReviewRateResource($reviewRate)], 200);
     }
-    
 
-    public function indexByReview(Review $review){
+
+    public function indexByReview(Review $review)
+    {
         if (!$review) {
             return response()->json(['message' => 'review not found'], 404);
         }
         $review = Review::find($review);
         $review->load('reviewRates');
         $reviewRates = ReviewRate::with('user')->orderBy('user_id', 'asc')->get();
-        
     }
 
 
@@ -65,7 +66,7 @@ class ReviewRateController extends Controller
         return response()->json(['reviewRate' => new ReviewRateResource($reviewRate)], 200);
     }
 
-    
+
 
     /**
      * Remove the specified resource from storage.
@@ -75,5 +76,4 @@ class ReviewRateController extends Controller
         $reviewRate->delete();
         return response(null, 204);
     }
-    
 }

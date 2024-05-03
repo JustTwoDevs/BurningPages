@@ -50,15 +50,15 @@ class AdminUserSeeder extends Seeder
         ]);
 
         AdminUser::create([
-            'user_id' => 1,
-        ]);
-
-        AdminUser::create([
             'user_id' => 2,
         ]);
 
         AdminUser::create([
             'user_id' => 3,
+        ]);
+
+        AdminUser::create([
+            'user_id' => 4,
         ]);
     }
 }

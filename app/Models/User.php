@@ -61,4 +61,11 @@ class User extends Authenticatable
     {
         return RegisteredUser::query()->where('user_id', $this->id)->exists();
     }
+
+    public function role()
+    {
+        if ($this->isAdmin()) return 'admin';
+        if ($this->isRegistered()) return 'registered';
+        return 'superAdmin';
+    }
 }

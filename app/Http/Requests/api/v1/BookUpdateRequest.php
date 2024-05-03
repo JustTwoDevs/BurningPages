@@ -31,6 +31,7 @@ class BookUpdateRequest extends FormRequest
             'readersScore' => 'missing',
             'authors' => 'missing',
             'genres' => 'missing',
+            'cover' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ];
     }
 
@@ -57,6 +58,9 @@ class BookUpdateRequest extends FormRequest
             'readersScore.missing' => 'The readers score cannot be updated.',
             'authors.missing' => 'The authors cannot be updated. For this, use the addAuthor and removeAuthor endpoints.',
             'genres.missing' => 'The genres cannot be updated. For this, use the addGenre and removeGenre endpoints.',
+            'cover.image' => 'The cover must be an image.',
+            'cover.mimes' => 'The cover must be a file of type: jpeg, png, jpg, gif, svg.',
+            'cover.max' => 'The cover may not be greater than 2048 characters.',
         ];
     }
 }

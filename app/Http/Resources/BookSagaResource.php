@@ -25,6 +25,7 @@ class BookSagaResource extends JsonResource
             'Books' => BookResource::collection($this->whenLoaded('books')),
             'Genres' => GenreResource::collection($this->whenLoaded('genres')),
             'Authors' => AuthorResource::collection($this->whenLoaded('authors')),
+            'Cover' => $this->image_path,
         ];
     }
 }
