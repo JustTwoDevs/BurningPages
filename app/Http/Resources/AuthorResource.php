@@ -26,7 +26,8 @@ class AuthorResource extends JsonResource
             'Last_update' => $this->updated_at,
             'Written_Books' => BookResource::collection($this->whenLoaded('books')),
             'Book_Sagas' => BookSagaResource::collection($this->whenLoaded('bookSagas')),
-            'Genres' => $this->whenLoaded('genres'),
+            'Genres' => $this->genres,
+            'Cover' => $this->image_path,
         ];
     }
 }

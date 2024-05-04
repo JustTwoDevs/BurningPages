@@ -19,6 +19,7 @@ class BookController extends Controller
      * Es posible ordenar por valoración de las reseñas en burningmeter y readerScore, y por fecha de publicación.
      *
      * Ejemplos:
+     * /books?search=Harry-Potter
      * /books?genres=novel,romance
      * /books?range=2010-01-01,2020-01-01
      * /books?originalLanguage=es
@@ -40,6 +41,20 @@ class BookController extends Controller
          *        $q->where('columna', $variable);
          *     });
          */
+
+
+        /**
+         * Filtrar por busqueda.
+         * Busca en el titulo, nombre de los autores y pseudónimos.
+         */
+        if (isset($query['search'])) {
+            $search = str_replace('-', ' ', $query['search']);
+            $books = $books->where('title', 'like', '%' . $search . '%')
+                ->orWhereHas('authors', function ($q) use ($search) {
+                    $q->whereRaw('concat(name, " ", lastname) like ?', '%' . $search . '%')
+                        ->orWhere('pseudonym', 'like', '%' . $search . '%');
+                });
+        }
 
         /**
          * Filtrar por género.
@@ -146,11 +161,13 @@ class BookController extends Controller
     {
         $request['burningmeter'] = 0;
         $request['readersScore'] = 0;
+
         if ($request->hasFile('cover')) {
             $path = $request->file('cover')->store('public');
             $path = str_replace('public', 'storage', $path);
             $request['image_path'] = $path;
         }
+
         $book = Book::create($request->all());
         if ($request->authors) $book->authors()->attach($request->authors);
         if ($request->genres) $book->genres()->attach($request->genres);
@@ -182,7 +199,6 @@ class BookController extends Controller
      */
     public function show(Book $book)
     {
-
         $book->load(['authors', 'genres', 'bookSagas']);
         return response()->json(['book' => new BookResource($book)], 200);
     }

@@ -23,8 +23,8 @@ class BookSagaResource extends JsonResource
             'Creation_date' => $this->created_at,
             'Last_update' => $this->updated_at,
             'Books' => BookResource::collection($this->whenLoaded('books')),
-            'Genres' => GenreResource::collection($this->whenLoaded('genres')),
-            'Authors' => AuthorResource::collection($this->whenLoaded('authors')),
+            'Genres' => GenreResource::collection($this->genres),
+            'Authors' => AuthorResource::collection($this->authors),
             'Cover' => $this->image_path,
         ];
     }

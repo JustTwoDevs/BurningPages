@@ -29,6 +29,7 @@ class AuthorStoreRequest extends FormRequest
             'death_date' => 'nullable|date',
             'biography' => 'required|string|min:20',
             'nationality_id' => 'required|exists:nationalities,id',
+            'cover' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ];
     }
 
@@ -58,7 +59,10 @@ class AuthorStoreRequest extends FormRequest
             'biography.string' => 'The biography must be a string.',
             'biography.min' => 'The biography must be at least 20 characters.',
             'nationality_id.required' => 'The nationality is required.',
-            'nationality_id.exists' => 'The nationality does not exist.'
+            'nationality_id.exists' => 'The nationality does not exist.',
+            'cover.image' => 'The cover must be an image.',
+            'cover.mimes' => 'The cover must be a file of type: jpeg, png, jpg, gif, svg.',
+            'cover.max' => 'The cover may not be greater than 2048 kilobytes.',
         ];
     }
 }

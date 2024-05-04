@@ -20,6 +20,7 @@ class BookSagaController extends Controller
      * Es posible ordenar por valoración de las reseñas en burningmeter y readerScore.
      *
      * Ejemplos:
+     * /bookSagas?search=Harry-Potter
      * /bookSagas?genres=fantasy,romance
      * /bookSagas?name=Harry-Potter
      * /bookSagas?author=J.K-Rowling
@@ -28,6 +29,20 @@ class BookSagaController extends Controller
     {
         $query = request()->query();
         $bookSagas = BookSaga::query()->with('books');
+
+        /**
+         * Filtrar por busqueda.
+         * Busca en el nombre de la saga y el nombre de los autores.
+         */
+        if (isset($query['search'])) {
+            $search = str_replace('-', ' ', $query['search']);
+            $bookSagas = $bookSagas->where('name', 'like', '%' . $search . '%')
+                ->orWhereHas('books', function ($q) use ($search) {
+                    $q->whereHas('authors', function ($query) use ($search) {
+                        $query->whereRaw('concat(name, " ", lastname) like ?', '%' . $search . '%');
+                    });
+                });
+        }
 
         /**
          * Filtrar por nombre.
