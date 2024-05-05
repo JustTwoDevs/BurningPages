@@ -21,6 +21,7 @@ return new class extends Migration
             $table->longText('biography')->nullable(false);
             $table->foreignId('nationality_id')->nullable(false);
             $table->foreign('nationality_id')->references('id')->on('nationalities')->cascadeOnUpdate()->restrictOnDelete();
+            $table->string('image_path', 255)->nullable(true);
             $table->timestamps();
         });
     }

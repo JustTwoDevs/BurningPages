@@ -16,6 +16,7 @@ use App\Http\Controllers\api\v1\AdminUserController;
 use App\Http\Controllers\api\v1\AuthController;
 use App\Http\Controllers\api\v1\ReviewController;
 use App\Http\Controllers\api\v1\BookReviewRateController;
+use App\Models\Nationality;
 
 
 
@@ -140,7 +141,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         /**
          * Genres
          */
-        Route::apiResource('v1/genres', GenreController::class);
+        Route::apiResource('v1/genres', GenreController::class)->except(['index']);
 
         /**
          * reviews
@@ -215,6 +216,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 Route::apiResource("v1/books", BookController::class)->only(['index', 'show']);
 Route::apiResource("v1/authors", AuthorController::class)->only(['index', 'show']);
 Route::apiResource("v1/bookSagas", BookSagaController::class)->only(['index', 'show']);
+Route::get("v1/genres", [GenreController::class, 'index']);
 
 
 /**
@@ -277,3 +279,10 @@ Route::get('v1/reviews/{review}', [ReviewController::class, 'show']);
 Route::get('v1/reviewRates/{reviewRate}', [ReviewRateController::class, 'show']);
 Route::get('v1/bookReviews/{review}/reviewRates', [BookReviewRateController::class, 'indexByReview']);
 Route::get('v1/bookSagaReviews/{review}/reviewRates', [SagaReviewRateController::class, 'indexByReview']);
+
+/**
+ *  Obtener todas las nacionalidades
+ */
+Route::get('v1/nationalities', function () {
+    return Nationality::all();
+});

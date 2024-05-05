@@ -20,6 +20,7 @@ class AuthorController extends Controller
      * Es posible ordenar por nombre completo.
      *
      * Ejemplos:
+     * /authors?search=J.K-Rowling
      * /authors?name=J.K-Rowling
      * /authors?pseudonym=Gabo
      * /authors?nationality=Colombia
@@ -30,6 +31,16 @@ class AuthorController extends Controller
     {
         $query = $request->query();
         $authors = Author::query()->with(['books', 'nationality']);
+
+        /**
+         * Filtrar por busqueda.
+         * Busca en el nombre completo y pseudónimo.
+         */
+        if (isset($query['search'])) {
+            $search = str_replace('-', ' ', $query['search']);
+            $authors = $authors->whereRaw('concat(name, " ", lastname) like ?', '%' . $search . '%')
+                ->orWhere('pseudonym', 'like', '%' . $search . '%');
+        }
 
         /**
          * Filtrar por nombre completo.
@@ -116,6 +127,12 @@ class AuthorController extends Controller
      */
     public function store(AuthorStoreRequest $request)
     {
+        if ($request->hasFile('cover')) {
+            $path = $request->file('cover')->store('public');
+            $path = str_replace('public', 'storage', $path);
+            $request['image_path'] = $path;
+        }
+
         $author = Author::create($request->all());
         $author->load('nationality');
         return response()->json(['author' => $author], 201);
@@ -148,6 +165,12 @@ class AuthorController extends Controller
      */
     public function update(AuthorUpdateRequest $request, Author $author)
     {
+        if ($request->hasFile('cover')) {
+            $path = $request->file('cover')->store('public');
+            $path = str_replace('public', 'storage', $path);
+            $request['image_path'] = $path;
+        }
+
         $author->update($request->all());
         $author->load('nationality');
         return response()->json(['author' => new AuthorResource($author)], 200);

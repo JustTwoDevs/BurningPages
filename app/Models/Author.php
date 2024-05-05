@@ -21,6 +21,7 @@ class Author extends Model
         'death_date',
         'biography',
         'nationality_id',
+        'image_path',
     ];
 
     public function nationality(): BelongsTo
