@@ -14,6 +14,25 @@ use App\Models\BookSagaReview;
 
 class ReviewController extends Controller
 {
+
+    public function update(ReviewUpdateRequest $request, Review $review)
+{
+    if (!$review) {
+        return response()->json(['message' => 'review not found'], 404);
+    }
+    $user = auth()->user();
+    $registeredUser = RegisteredUser::query()->where('user_id', $user['id'])->first();
+    
+    
+    $review->load([ 'user']);
+    if ($review->state === 'draft' && $review->user->id === $registeredUser->id) {
+        $data = $request->validated();
+        $review->update($data);
+        return response()->json(['review' => new GReviewResource($review)], 200);
+    } 
+    return response()->json(['review' => new GReviewResource($review)], 200);
+}
+
     
 
     public function indexMyReviews()
@@ -26,6 +45,15 @@ class ReviewController extends Controller
         $registeredUser->load('reviews');
         
         return response()->json(['reviews' =>  GReviewResource::collection($registeredUser->reviews)], 200);
+    }
+
+    public function index() 
+    {
+        $reviews = Review::with('user')->where('state', 'published')->orderBy('user_id', 'asc');
+    
+        $result = $reviews->get();
+    
+        return response()->json(['reviews' => GReviewResource::collection($result)], 200);
     }
 
     public function indexAdmin()
@@ -68,7 +96,7 @@ class ReviewController extends Controller
 
     public function publishAdmin( Review $review)
     {
-        if ($review->state === 'occult') {
+        if ($review->state === 'hidden') {
             $review->state = 'published';
             $review->save();
             return response()->json(['review' => new GReviewResource($review)]);
@@ -130,7 +158,7 @@ class ReviewController extends Controller
 
         $review->delete();
     
-        return response(null, 204);
+        return response('review deleted succesfully', 204);
     }
     
 

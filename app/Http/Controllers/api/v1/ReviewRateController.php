@@ -7,6 +7,7 @@ use App\Http\Requests\api\v1\ReviewRatesStoreRequest;
 use App\Http\Resources\api\ReviewRateResource;
 use App\Models\ReviewRate;
 use App\Models\Review;
+use App\Models\RegisteredUser;
 use Illuminate\Http\Request;
 
 
@@ -25,10 +26,11 @@ class ReviewRateController extends Controller
         if (!$user) {
             return response()->json(['message' => 'user not found'], 404);
         }
+        $registeredUser = RegisteredUser::where('user_id', $user['id'])->first();
 
         $reviewRates = ReviewRate::with('user')->orderBy('user_id', 'asc')->get();
-        $filteredRates = $reviewRates->filter(function ($reviewRate) use ($user) {
-            $result = $reviewRate->user->id == $user->id;
+        $filteredRates = $reviewRates->filter(function ($reviewRate) use ($registeredUser) {
+            $result = $reviewRate->user->id == $registeredUser->id;
             return $result;
         });
 

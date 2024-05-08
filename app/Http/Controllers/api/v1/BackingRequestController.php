@@ -36,24 +36,25 @@ class BackingRequestController extends Controller {
 
     public function store( BackingRequestStoreRequest $request ) {
         $user = auth()->user();
+        $registeredUser = RegisteredUser::query()->where('user_id', $user['id'])->first();
        
         $backingRequests = BackingRequest::with( 'user' )->orderBy( 'id', 'asc' )->get();
-        $backingRequests = $backingRequests->filter( function ( $backingRequest ) use ( $user ) {
-            return $backingRequest->user->id == $user->id;
+        $backingRequests = $backingRequests->filter( function ( $backingRequest ) use ( $registeredUser ) {
+            return $backingRequest->user->id == $registeredUser->id;
         } );
         $backingRequests = $backingRequests->filter( function ( $backingRequest ) {
             return $backingRequest->state === 'approved'|| $backingRequest->state === 'pending';
         } );
-        if ( $backingRequests->count() > 0 ) {
+      if ( $backingRequests->count() > 0 ) {
             return response()->json( [ 'message'=>'user already has an approved or pending backing request' ], 400 );
         }
         $data = [
-            'user_id' => $user->id,
+            'user_id' => $registeredUser->id,
             'content' => $request->input( 'content' ),
         ];
         $backingRequest = BackingRequest::create( $data );
 
-        $backingRequest->load( 'user' );
+      //  $backingRequest->load( 'user' );
         $backingRequest->state='pending';
         $backingRequest->save();
         return response()->json( [ 'backingRequest' => new BackingRequestResource( $backingRequest ) ], 201 );

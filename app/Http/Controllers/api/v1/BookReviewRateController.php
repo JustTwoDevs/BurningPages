@@ -12,6 +12,8 @@ use App\Models\BookReview;
 
 class BookReviewRateController extends Controller
 {
+
+    
     /**
      * Display a listing of the resource.
      */
@@ -35,6 +37,11 @@ class BookReviewRateController extends Controller
             return response()->json(['message' => 'book review not found'], 404);
         }
 
+       $review= $bookReview->review;
+       if ($review->state !== 'published') {
+            return response()->json(['message' => 'you cannot access to this review'], 400);
+        }
+
         $user = auth()->user();
         $registeredUser = RegisteredUser::query()->where('user_id', $user['id'])->first();
         // si ya existe una reviewrate de este usuario para esta review, no se le permite crear otro
@@ -45,6 +52,8 @@ class BookReviewRateController extends Controller
         if ($bookReviewRate->count() > 0) {
             return response()->json(['message' => 'user already has a review rate for this review'], 400);
         }
+
+    
         $data = [
             'value' => $request->input('value'),
             'user_id' => $registeredUser->id,

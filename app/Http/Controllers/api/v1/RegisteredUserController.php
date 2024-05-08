@@ -10,6 +10,7 @@ use App\Http\Requests\api\v1\UpdateMyPasswordRequest;
 use App\Http\Resources\api\ProfileResource;
 use App\Models\RegisteredUser;
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class RegisteredUserController extends Controller
 {
@@ -280,18 +281,22 @@ class RegisteredUserController extends Controller
     }
 
     public function updateMyPassword(UpdateMyPasswordRequest $request)
-    {
-        $user = auth()->user();
-        if ($user == null) {
-            return response()->json(['error' => 'User not found'], 404);
-        }
-        $user = User::query()->whereKey($user['id'])->where('password', $request->oldPassword)->first();
-        if ($user == null) {
-            return response()->json(['error' => 'The old password is incorrect'], 400);
-        }
-        $user->update(['password' => $request->newPassword]);
-        return response()->json(['myProfile' => $user], 200);
+{
+    $user = auth()->user();
+    if ($user == null) {
+        return response()->json(['error' => 'User not found'], 404);
     }
+    $user = User::find($user->id);
+
+    if (!Hash::check($request->oldPassword, $user->password)) {
+        return response()->json(['error' => 'The old password is incorrect'], 400);
+    }
+
+    $user->update(['password' => Hash::make($request->newPassword)]);
+
+    return response()->json(['myProfile' => $user], 200);
+}
+
 
     /**
      * Remove the specified resource from storage.

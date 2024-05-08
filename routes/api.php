@@ -75,8 +75,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::patch('v1/reviews/{review}/draft', [ReviewController::class, 'draft']);
         Route::delete('v1/reviews/{review}', [ReviewController::class, 'destroy']);
         Route::get('v1/reviews/{review}/mine', [ReviewController::class, 'showRegistered']);
-
-
+        Route::put('v1/reviews/{review}', [ReviewController::class, 'update']);
 
         /**
          * BackingRequests
@@ -268,6 +267,7 @@ Route::get('v1/users/{user}/reviews', [ReviewController::class, 'indexByUser']);
 Route::get('v1/books/{book}/bookReviews', [BookReviewController::class, 'indexByBook']);
 Route::get('v1/bookSagas/{bookSaga}/bookSagaReviews', [BookSagaReviewController::class, 'indexByBookSaga']);
 Route::get('v1/reviews/{review}', [ReviewController::class, 'show']);
+Route::get('v1/reviews', [BookReviewController::class, 'index']);
 
 /**
  * Calificaciones de una reseña
