@@ -26,13 +26,13 @@ class ReviewRateResource extends JsonResource
         if ($this->isbook()) {
             $review = BookReviewRate::query()->where('reviewRate_id', $this->id)->first();
             $review->load('bookReview');
-            $formattedReviewRate['bookReview'] = $review->bookReview->load('book');
+            $formattedReviewRate['bookReview'] = $review->bookReview->load('book','review');
         }
     
         if ($this->isSaga()) {
             $review = SagaReviewRate::query()->where('reviewRate_id', $this->id)->first();
             $review->load('bookSagaReview');
-            $formattedReviewRate['bookSagaReview'] = $review->bookSagaReview->load('bookSaga');
+            $formattedReviewRate['bookSagaReview'] = $review->bookSagaReview->load('bookSaga', 'review');
         }
         return $formattedReviewRate;
     }

@@ -32,12 +32,14 @@ class GReviewResource extends JsonResource
         if ($this->isbook()) {
             $book = BookReview::query()->where('review_id', $this->id)->first();
             $book->load('book');
+            $formattedReview['bookReview_id'] = $book->id;
             $formattedReview['book'] = $book->book;
         }
     
         if ($this->isSaga()) {
             $bookSaga = BookSagaReview::query()->where('review_id', $this->id)->first();
             $bookSaga->load('bookSaga');
+            $formattedReview['sagaReview_id'] = $bookSaga->id;
             $formattedReview['bookSaga'] = $bookSaga->bookSaga;
         }
 
