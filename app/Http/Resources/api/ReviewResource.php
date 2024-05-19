@@ -4,6 +4,7 @@ namespace App\Http\Resources\api;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\BookReviewRateResource;
 
 class ReviewResource extends JsonResource
 {
@@ -21,10 +22,9 @@ class ReviewResource extends JsonResource
             'rate' => $this->review->rate,
             'content'  => $this->review->content,
             'state' => $this->review->state,
-            'reviewrates' => $this->load('reviewRates'),
+            'reviewrates' => BookReviewRateResource::collection($this->reviewRates),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
-            
         ];
     }
 }
