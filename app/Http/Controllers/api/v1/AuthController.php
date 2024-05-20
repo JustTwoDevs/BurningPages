@@ -43,7 +43,8 @@ class AuthController extends Controller
         // Enviar el token recién creado al cliente.
         return response()->json([
             'token' => $token->plainTextToken,
-            'type' => $tokenType
+            'type' => $tokenType,
+            'rol' => $user->role()
         ], 200);
     }
 

@@ -23,8 +23,8 @@ class UserStoreRequest extends FormRequest
     {
         return [
             'name' => 'required|string|alpha:ascii|max:255|min:1',
-            'lastname' => 'required|string|alpha:ascii|max:255|min:1',
-            'username' => 'required|string|alpha_dash:ascii|max:80|min:7|unique:users,username',
+            'lastname' => 'required|string|max:255|min:1',
+            'username' => 'required|string|max:80|min:7|unique:users,username',
             'email' => 'required|email|min:8|max:255|unique:users,email',
             'nationality_id' => 'required|exists:nationalities,id',
             'birthdate' => 'required|date_format:Y-m-d',
@@ -37,7 +37,7 @@ class UserStoreRequest extends FormRequest
         return [
             'name.required' => 'El nombre es requerido',
             'name.string' => 'El nombre debe ser una cadena de caracteres',
-            'name.alpha' => 'El nombre debe contener caracteres alfabeticos',
+            'name.alpha' => 'El nombre no debe contener caracteres especiales',
             'name.max' => 'El nombre debe contener como maximo de 255 caracteres',
             'name.min' => 'El nombre debe contener al menos 1 caracter',
             'lastname.required' => 'El apellido es requerido',
