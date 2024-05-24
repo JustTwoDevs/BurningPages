@@ -17,9 +17,9 @@ use App\Http\Controllers\api\v1\AuthController;
 use App\Http\Controllers\api\v1\ReviewController;
 use App\Http\Controllers\api\v1\BookReviewRateController;
 use App\Models\Nationality;
-
-
-
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 /*
 |--------------------------------------------------------------------------
@@ -285,4 +285,22 @@ Route::get('v1/bookSagaReviews/{review}/reviewRates', [SagaReviewRateController:
  */
 Route::get('v1/nationalities', function () {
     return Nationality::all();
+});
+
+Route::post('v1/images', function (Request $request) {
+    $path = $request->file('cover')->store('public');
+    $path = str_replace('public/', '', $path);
+    $url = url('storage/', $path);
+    return response()->json(['image_path' => $path]);
+});
+
+Route::get('v1/images/{imageId}', function (string $imageId) {
+    if (!Storage::disk('public')->exists($imageId)) {
+        return response()->json(['message' => 'File not found.'], 404);
+    }
+
+    $file = Storage::disk('public')->get($imageId);
+    $filePath = storage_path('app/public/' . $imageId);
+    $mimeType = File::mimeType($filePath);
+    return response($file, 200)->header('Content-Type', $mimeType);
 });
