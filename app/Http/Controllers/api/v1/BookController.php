@@ -164,7 +164,7 @@ class BookController extends Controller
 
         if ($request->hasFile('cover')) {
             $path = $request->file('cover')->store('public');
-            $path = str_replace('public', 'storage', $path);
+            $path = str_replace('public/', '', $path);
             $request['image_path'] = $path;
         }
 
@@ -210,8 +210,9 @@ class BookController extends Controller
     {
         if ($request->hasFile('cover')) {
             $path = $request->file('cover')->store('public');
-            $path = str_replace('public', 'storage', $path);
-            $request['image_path'] = $path;
+            $path = str_replace('public/', '', $path);
+            $book->image_path = $path;
+            $book->save();
         }
 
         $book->update($request->all());
