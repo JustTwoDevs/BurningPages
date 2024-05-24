@@ -162,12 +162,6 @@ class BookController extends Controller
         $request['burningmeter'] = 0;
         $request['readersScore'] = 0;
 
-        if ($request->hasFile('cover')) {
-            $path = $request->file('cover')->store('public');
-            $path = str_replace('public/', '', $path);
-            $request['image_path'] = $path;
-        }
-
         $book = Book::create($request->all());
         if ($request->authors) $book->authors()->attach($request->authors);
         if ($request->genres) $book->genres()->attach($request->genres);
@@ -208,14 +202,10 @@ class BookController extends Controller
      */
     public function update(BookUpdateRequest $request, Book $book)
     {
-        if ($request->hasFile('cover')) {
-            $path = $request->file('cover')->store('public');
-            $path = str_replace('public/', '', $path);
-            $book->image_path = $path;
-            $book->save();
-        }
-
+        $request['image_path'] = $request->input('cover');
         $book->update($request->all());
+        if ($request->authors) $book->authors()->sync($request->authors);
+        if ($request->genres) $book->genres()->sync($request->genres);
         return response()->json(['book' => new BookResource($book)], 200);
     }
 
