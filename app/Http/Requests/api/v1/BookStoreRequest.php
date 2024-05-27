@@ -24,8 +24,8 @@ class BookStoreRequest extends FormRequest
         return [
             'title' => 'required|string|min:3|max:100|unique:books,title',
             'sinopsis' => 'required|string|min:20',
-            'publication_date' => 'nullable|date',
-            'original_language' => 'required|string|min:2|max:2',
+            'publication_date' => 'nullable|date_format:Y-m-d',
+            'original_language' => 'required|string|min:2|max:50',
             'burningmeter' => 'missing',
             'readersScore' => 'missing',
             'buyLink' => 'required|string|min:20|max:255',
@@ -33,7 +33,7 @@ class BookStoreRequest extends FormRequest
             'authors.*' => 'exists:authors,id',
             'genres' => 'array|min:1',
             'genres.*' => 'exists:genres,id',
-            'cover' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'cover' => 'string',
         ];
     }
 
@@ -51,7 +51,7 @@ class BookStoreRequest extends FormRequest
             'sinopsis.required' => 'The sinopsis is required.',
             'sinopsis.string' => 'The sinopsis must be a string.',
             'sinopsis.min' => 'The sinopsis must be at least 20 characters.',
-            'publication_date.date' => 'The publication date is not a valid date.',
+            'publication_date.date_format' => 'The publication date must be in the format YYYY-MM-DD.',
             'original_language.required' => 'The original language is required.',
             'original_language.string' => 'The original language must be a string.',
             'original_language.min' => 'The original language must be at least 2 characters.',
@@ -68,9 +68,7 @@ class BookStoreRequest extends FormRequest
             'genres.array' => 'The genres must be an array.',
             'genres.min' => 'The genres must have at least 1 item.',
             'genres.*.exists' => 'The selected genres is invalid.',
-            'cover.image' => 'The cover must be an image.',
-            'cover.mimes' => 'The cover must be a file of type: jpeg, png, jpg, gif, svg.',
-            'cover.max' => 'The cover may not be greater than 2048 kilobytes.',
+            'cover.string' => 'The cover must be a string',
         ];
     }
 }

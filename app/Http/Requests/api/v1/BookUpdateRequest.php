@@ -24,14 +24,12 @@ class BookUpdateRequest extends FormRequest
         return [
             'title' => 'string|min:3|max:100|unique:books,title',
             'sinopsis' => 'string|min:20',
-            'publication_date' => 'date',
+            'publication_date' => 'date_format:Y-m-d',
             'original_language' => 'string|min:2|max:2',
             'buyLink' => 'string|min:20|max:255',
             'burningmeter' => 'missing',
             'readersScore' => 'missing',
-            'authors' => 'missing',
-            'genres' => 'missing',
-            'cover' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'cover' => 'string',
         ];
     }
 
@@ -47,7 +45,7 @@ class BookUpdateRequest extends FormRequest
             'title.unique' => 'The title has already been taken.',
             'sinopsis.string' => 'The sinopsis must be a string.',
             'sinopsis.min' => 'The sinopsis must be at least 20 characters.',
-            'publication_date.date' => 'The publication date is not a valid date.',
+            'publication_date.date_format' => 'The publication date is not a valid date.',
             'original_language.string' => 'The original language must be a string.',
             'original_language.min' => 'The original language must be at least 2 characters.',
             'original_language.max' => 'The original language may not be greater than 2 characters.',
@@ -58,9 +56,7 @@ class BookUpdateRequest extends FormRequest
             'readersScore.missing' => 'The readers score cannot be updated.',
             'authors.missing' => 'The authors cannot be updated. For this, use the addAuthor and removeAuthor endpoints.',
             'genres.missing' => 'The genres cannot be updated. For this, use the addGenre and removeGenre endpoints.',
-            'cover.image' => 'The cover must be an image.',
-            'cover.mimes' => 'The cover must be a file of type: jpeg, png, jpg, gif, svg.',
-            'cover.max' => 'The cover may not be greater than 2048 characters.',
+            'cover.string' => 'The cover must be a string.',
         ];
     }
 }
