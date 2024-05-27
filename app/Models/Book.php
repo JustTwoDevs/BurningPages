@@ -17,8 +17,6 @@ class Book extends Model
         'sinopsis',
         'publication_date',
         'original_language',
-        'burningmeter',
-        'readersScore',
         'buyLink',
         'image_path',
     ];

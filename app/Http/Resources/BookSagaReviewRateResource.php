@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class BookReviewRateResource extends JsonResource
+class BookSagaReviewRateResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,8 +16,8 @@ class BookReviewRateResource extends JsonResource
     {
         return[
             'id' => $this->id,
-            'book_review' => $this->load('bookReview'),
-            'review_rate' => $this->load('reviewRate', 'reviewRate.user.user'),
+            'bookSagaReview_id' => $this->bookSagaReview_id,
+            'review_rate' => $this->load('reviewRate'),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

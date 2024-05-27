@@ -18,6 +18,7 @@ class ReviewResource extends JsonResource
         return[
             'code' => $this->id,
             'user' => $this->review->user,
+            'review_id' => $this->review->id,
             'book' => $this->load('book')->book,
             'rate' => $this->review->rate,
             'content'  => $this->review->content,
