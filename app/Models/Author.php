@@ -36,7 +36,7 @@ class Author extends Model
 
     public function getGenresAttribute()
     {
-        return Genre::select('genres.name')
+        return Genre::select('genres.*')
             ->join('bookGenres', 'bookGenres.genre_id', '=', 'genres.id')
             ->join('bookWriters', 'bookWriters.book_id', '=', 'bookGenres.book_id')
             ->where('bookWriters.author_id', '=', $this->id)

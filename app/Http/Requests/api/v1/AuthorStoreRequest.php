@@ -25,11 +25,11 @@ class AuthorStoreRequest extends FormRequest
             'name' => 'required|string|min:3|max:100',
             'lastname' => 'required|string|min:3|max:100',
             'pseudonym' => 'required|string|min:3|max:100|unique:authors,pseudonym',
-            'birth_date' => 'required|date',
-            'death_date' => 'nullable|date',
+            'birth_date' => 'required|date_format:Y-m-d',
+            'death_date' => 'nullable|date_format:Y-m-d',
             'biography' => 'required|string|min:20',
             'nationality_id' => 'required|exists:nationalities,id',
-            'cover' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'cover' => 'string',
         ];
     }
 
@@ -53,16 +53,14 @@ class AuthorStoreRequest extends FormRequest
             'pseudonym.max' => 'The pseudonym may not be greater than 100 characters.',
             'pseudonym.unique' => 'The pseudonym has already been taken.',
             'birth_date.required' => 'The birth date is required.',
-            'birth_date.date' => 'The birth date must be a date.',
-            'death_date.date' => 'The death date must be a date.',
+            'birth_date.date_format' => 'The birth date must be in the format YYYY-MM-DD.',
+            'death_date.date_format' => 'The death date must be in the format YYYY-MM-DD.',
             'biography.required' => 'The biography is required.',
             'biography.string' => 'The biography must be a string.',
             'biography.min' => 'The biography must be at least 20 characters.',
             'nationality_id.required' => 'The nationality is required.',
             'nationality_id.exists' => 'The nationality does not exist.',
-            'cover.image' => 'The cover must be an image.',
-            'cover.mimes' => 'The cover must be a file of type: jpeg, png, jpg, gif, svg.',
-            'cover.max' => 'The cover may not be greater than 2048 kilobytes.',
+            'cover.string' => 'The cover must be a string.',
         ];
     }
 }

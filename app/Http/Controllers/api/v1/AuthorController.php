@@ -11,6 +11,7 @@ use App\Http\Requests\api\v1\AuthorStoreRequest;
 use App\Http\Requests\api\v1\AuthorUpdateRequest;
 use App\Http\Resources\AuthorResource;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
 
 class AuthorController extends Controller
 {
@@ -91,6 +92,9 @@ class AuthorController extends Controller
         foreach ($authors as $author) {
             $author["genres"] = $author->getGenresAttribute();
             $author["bookSagas"] = $author->getBookSagasAttribute();
+            if ($author->image_path) {
+                $author->image_path = url('storage/' . $author->image_path);
+            }
         }
 
         return response()->json(['authors' => AuthorResource::collection($authors)], 200);
@@ -127,12 +131,7 @@ class AuthorController extends Controller
      */
     public function store(AuthorStoreRequest $request)
     {
-        if ($request->hasFile('cover')) {
-            $path = $request->file('cover')->store('public');
-            $path = str_replace('public', 'storage', $path);
-            $request['image_path'] = $path;
-        }
-
+        $request['image_path'] = $request->input('cover');
         $author = Author::create($request->all());
         $author->load('nationality');
         return response()->json(['author' => $author], 201);
@@ -165,12 +164,7 @@ class AuthorController extends Controller
      */
     public function update(AuthorUpdateRequest $request, Author $author)
     {
-        if ($request->hasFile('cover')) {
-            $path = $request->file('cover')->store('public');
-            $path = str_replace('public', 'storage', $path);
-            $request['image_path'] = $path;
-        }
-
+        $request['image_path'] = $request->input('cover');
         $author->update($request->all());
         $author->load('nationality');
         return response()->json(['author' => new AuthorResource($author)], 200);
@@ -181,6 +175,7 @@ class AuthorController extends Controller
      */
     public function destroy(Author $author)
     {
+        Storage::delete('public/' . $author->image_path);
         $author->delete();
         return response()->json(['message' => 'Author successfully removed'], 200);
     }

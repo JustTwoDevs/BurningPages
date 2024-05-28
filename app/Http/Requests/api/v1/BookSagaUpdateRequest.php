@@ -27,8 +27,8 @@ class BookSagaUpdateRequest extends FormRequest
             'order' => 'missing',
             'burningmeter' => 'missing',
             'readersScore' => 'missing',
-            'books' => 'missing',
-            'cover' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            // 'books' => 'missing',
+            'cover' => 'string',
         ];
     }
 
@@ -47,10 +47,8 @@ class BookSagaUpdateRequest extends FormRequest
             'order.missing' => 'The order cannot be updated. For this, use the addBook and removeBook endpoints.',
             'burningmeter.missing' => 'The burningmeter cannot be updated.',
             'readersScore.missing' => 'The readers score cannot be updated.',
-            'books.missing' => 'The books cannot be updated. For this, use the addBook and removeBook endpoints.',
-            'cover.image' => 'The cover must be an image.',
-            'cover.mimes' => 'The cover must be a file of type: jpeg, png, jpg, gif, svg.',
-            'cover.max' => 'The cover may not be greater than 2048 characters.',
+            // 'books.missing' => 'The books cannot be updated. For this, use the addBook and removeBook endpoints.',
+            'cover.string' => 'The cover must be a string.',
         ];
     }
 }

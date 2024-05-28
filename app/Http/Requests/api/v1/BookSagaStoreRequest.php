@@ -28,9 +28,9 @@ class BookSagaStoreRequest extends FormRequest
             'order.*' => 'integer|min:1',
             'burningmeter' => 'missing',
             'readersScore' => 'missing',
-            'books' => 'array|min:1',
+            'books' => 'required|array|min:1',
             'books.*' => 'exists:books,id',
-            'cover' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'cover' => 'string',
         ];
     }
 
@@ -56,9 +56,7 @@ class BookSagaStoreRequest extends FormRequest
             'books.array' => 'The books must be an array.',
             'books.min' => 'The books must have at least 1 item.',
             'books.*.exists' => 'The selected books is invalid.',
-            'cover.image' => 'The cover must be an image.',
-            'cover.mimes' => 'The cover must be a file of type: jpeg, png, jpg, gif, svg.',
-            'cover.max' => 'The cover may not be greater than 2048 characters.',
+            'cover.string' => 'The cover must be a string.',
         ];
     }
 }

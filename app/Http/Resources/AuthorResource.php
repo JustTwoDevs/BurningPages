@@ -17,6 +17,8 @@ class AuthorResource extends JsonResource
         return [
             'Code' => $this->id,
             'Name' => $this->name . ' ' . $this->lastname,
+            'name' => $this->name,
+            'lastname' => $this->lastname,
             'Pseudonym' => $this->pseudonym,
             'Birth' => $this->birth_date,
             'Death' => $this->whenNotNull($this->death_date),
@@ -25,7 +27,7 @@ class AuthorResource extends JsonResource
             'Creation_date' => $this->created_at,
             'Last_update' => $this->updated_at,
             'Written_Books' => BookResource::collection($this->whenLoaded('books')),
-            'Book_Sagas' => BookSagaResource::collection($this->whenLoaded('bookSagas')),
+            'Book_Sagas' => $this->bookSagas,
             'Genres' => $this->genres,
             'Cover' => $this->image_path,
         ];
