@@ -17,7 +17,7 @@ class BookSagaReviewRateResource extends JsonResource
         return[
             'id' => $this->id,
             'bookSagaReview_id' => $this->bookSagaReview_id,
-            'review_rate' => $this->load('reviewRate'),
+            'review_rate' => $this->load('reviewRate', 'reviewRate.user.user'),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

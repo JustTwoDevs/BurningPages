@@ -26,11 +26,10 @@ class BookResource extends JsonResource
                  if ($newReview->user->verified === 1) {
                      $totalVerifiedRates += $newReview->rate; 
                      $verifiedRatesCount++;
-                 } else {
+                 } else if ($newReview->user->verified === 0){
                      $totalUnverifiedRates += $newReview->rate; 
                      $unverifiedRatesCount++;
                  }
-                
          }
  
          $burningmeter = $verifiedRatesCount > 0 ? $totalVerifiedRates / $verifiedRatesCount : 0;
