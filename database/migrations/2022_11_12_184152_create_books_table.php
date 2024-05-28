@@ -17,8 +17,8 @@ return new class extends Migration
             $table->mediumText('sinopsis')->nullable(false);
             $table->date('publication_date')->nullable(true);
             $table->string('original_language', 50)->nullable(false);
-            $table->double('burningmeter')->nullable(false);
-            $table->double('readersScore')->nullable(false);
+            $table->double('burningmeter')->nullable(true);
+            $table->double('readersScore')->nullable(true);
             $table->string('buyLink', 255)->nullable(false)->unique();
             $table->string('image_path', 255)->nullable(true);
             $table->timestamps();

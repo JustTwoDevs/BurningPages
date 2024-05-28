@@ -160,9 +160,6 @@ class BookController extends Controller
      */
     public function store(BookStoreRequest $request)
     {
-        $request['burningmeter'] = 0;
-        $request['readersScore'] = 0;
-
         $request['image_path'] = $request->input('cover');
         $book = Book::create($request->all());
         if ($request->authors) $book->authors()->attach($request->authors);
@@ -196,6 +193,9 @@ class BookController extends Controller
     public function show(Book $book)
     {
         $book->load(['authors', 'genres', 'bookSagas']);
+        if ($book['image_path']) {
+            $book['image_path'] = url('storage/' . $book->image_path);
+        }
         return response()->json(['book' => new BookResource($book)], 200);
     }
 

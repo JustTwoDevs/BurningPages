@@ -175,7 +175,9 @@ class BookSagaController extends Controller
         $bookSaga->load('books');
         $bookSaga["genres"] = $bookSaga->getGenresAttribute();
         $bookSaga["authors"] = $bookSaga->getAuthorsAttribute();
-
+        if ($bookSaga['image_path']) {
+            $bookSaga['image_path'] = url('storage/' . $bookSaga->image_path);
+        }
         return response()->json(['bookSaga' => new BookSagaResource($bookSaga)], 200);
     }
 

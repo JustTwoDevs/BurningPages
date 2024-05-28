@@ -156,6 +156,9 @@ class AuthorController extends Controller
         $author->load('books');
         $author["genres"] = $author->getGenresAttribute();
         $author["bookSagas"] = $author->getBookSagasAttribute();
+        if ($author->image_path) {
+            $author->image_path = url('storage/' . $author->image_path);
+        }
         return response()->json(['author' => new AuthorResource($author)], 200);
     }
 
