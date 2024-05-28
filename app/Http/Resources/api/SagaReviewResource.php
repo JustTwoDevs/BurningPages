@@ -19,6 +19,7 @@ class SagaReviewResource extends JsonResource
             'code' => $this->id,
             'user' => $this->review->user,
             'bookSaga' => $this->load('bookSaga')->bookSaga,
+            'review_id' => $this->review->id,
             'rate' => $this->review->rate,
             'content'  => $this->review->content,
             'state' => $this->review->state,
