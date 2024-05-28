@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\api\v1\BookStoreRequest;
 use App\Http\Requests\api\v1\BookUpdateRequest;
 use App\Http\Resources\BookResource;
+use Illuminate\Support\Facades\Storage;
 
 class BookController extends Controller
 {
@@ -162,6 +163,7 @@ class BookController extends Controller
         $request['burningmeter'] = 0;
         $request['readersScore'] = 0;
 
+        $request['image_path'] = $request->input('cover');
         $book = Book::create($request->all());
         if ($request->authors) $book->authors()->attach($request->authors);
         if ($request->genres) $book->genres()->attach($request->genres);
@@ -214,6 +216,7 @@ class BookController extends Controller
      */
     public function destroy(Book $book)
     {
+        Storage::delete("public/" . $book->image_path);
         $book->genres()->detach();
         $book->authors()->detach();
         $book->bookSagas()->detach();

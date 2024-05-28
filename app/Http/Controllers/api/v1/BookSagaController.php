@@ -11,6 +11,7 @@ use App\Http\Requests\api\v1\BookSagaUpdateRequest;
 use App\Http\Requests\api\v1\AddBookStoreRequest;
 use App\Http\Resources\BookSagaResource;
 use App\Models\RegisteredUser;
+use Illuminate\Support\Facades\Storage;
 
 class BookSagaController extends Controller
 {
@@ -85,6 +86,9 @@ class BookSagaController extends Controller
         foreach ($bookSagas as $bookSaga) {
             $bookSaga["genres"] = $bookSaga->getGenresAttribute();
             $bookSaga["authors"] = $bookSaga->getAuthorsAttribute();
+            if ($bookSaga['image_path']) {
+                $bookSaga['image_path'] = url('storage/' . $bookSaga->image_path);
+            }
         }
 
         return response()->json(['bookSagas' => BookSagaResource::collection($bookSagas)], 200);
@@ -134,12 +138,7 @@ class BookSagaController extends Controller
         $request['burningmeter'] = 0;
         $request['readersScore'] = 0;
 
-        if ($request->hasFile('cover')) {
-            $path = $request->file('cover')->store('public');
-            $path = str_replace('public', 'storage', $path);
-            $request['image_path'] = $path;
-        }
-
+        $request['image_path'] = $request->input('cover');
         $bookSaga = BookSaga::create($request->all());
         if (isset($request->books)) {
             $bookSaga->books()->attach($request->books, ['order' => 1]);
@@ -185,13 +184,9 @@ class BookSagaController extends Controller
      */
     public function update(BookSagaUpdateRequest $request, BookSaga $bookSaga)
     {
-        if ($request->hasFile('cover')) {
-            $path = $request->file('cover')->store('public');
-            $path = str_replace('public', 'storage', $path);
-            $request['image_path'] = $path;
-        }
-
+        $request['image_path'] = $request->input('cover');
         $bookSaga->update($request->all());
+        if ($request->books) $bookSaga->books()->sync($request->books);
         return response()->json(['bookSaga' => new BookSagaResource($bookSaga)], 200);
     }
 
@@ -200,6 +195,7 @@ class BookSagaController extends Controller
      */
     public function destroy(BookSaga $bookSaga)
     {
+        Storage::delete('public/' . $bookSaga->image_path);
         $bookSaga->books()->detach();
         $bookSaga->delete();
         return response()->json(['message' => 'Book Saga successfully removed'], 200);
