@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class User extends Authenticatable
 {
@@ -19,8 +20,12 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'lastname',
+        'username',
         'email',
         'password',
+        'birthdate',
+        'nationality_id',
     ];
 
     /**
@@ -39,7 +44,28 @@ class User extends Authenticatable
      * @var array<string, string>
      */
     protected $casts = [
-        'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function nationality(): BelongsTo
+    {
+        return $this->belongsTo(Nationality::class, 'nationality_id');
+    }
+
+    public function isAdmin(): bool
+    {
+        return AdminUser::query()->where('user_id', $this->id)->exists();
+    }
+
+    public function isRegistered(): bool
+    {
+        return RegisteredUser::query()->where('user_id', $this->id)->exists();
+    }
+
+    public function role()
+    {
+        if ($this->isAdmin()) return 'admin';
+        if ($this->isRegistered()) return 'registered';
+        return 'superAdmin';
+    }
 }
