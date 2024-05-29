@@ -20,6 +20,7 @@ class BackingRequestController extends Controller
     {
 
         $backingRequests = BackingRequest::with('user')->orderBy('id', 'asc')->get();
+        $backingRequests->load("user.user");
         return response()->json(['backingRequests' => BackingRequestResource::collection($backingRequests)], 200);
     }
 
