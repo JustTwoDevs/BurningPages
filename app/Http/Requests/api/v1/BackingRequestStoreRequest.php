@@ -22,14 +22,15 @@ class BackingRequestStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-           
-            'content' => 'required|string|max:1000|min:10',
+
+            'content' => 'required|string|min:10',
         ];
     }
 
-    public function messages():array{
+    public function messages(): array
+    {
         return [
-            
+
             'content.required' => 'The content is required.',
             'content.string' => 'The content must be a string.',
             'content.max' => 'The content must be less than 1000 characters.',

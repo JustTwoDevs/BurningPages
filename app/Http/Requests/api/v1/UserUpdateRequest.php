@@ -22,9 +22,9 @@ class UserUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'string|alpha:ascii|max:255|min:1',
-            'lastname' => 'string|alpha:ascii|max:255|min:1',
-            'username' => 'string|alpha_dash:ascii|max:80|min:7|unique:users,username',
+            'name' => 'string|max:255|min:1',
+            'lastname' => 'string|max:255|min:1',
+            'username' => 'string|max:80|min:7|unique:users,username',
             'email' => 'email|min:8|max:255|unique:users,email',
             'nationality_id' => 'exists:nationalities,id',
             'birthdate' => 'date_format:Y-m-d',
@@ -36,15 +36,12 @@ class UserUpdateRequest extends FormRequest
     {
         return [
             'name.string' => 'El nombre debe ser una cadena de caracteres',
-            'name.alpha' => 'El nombre debe contener caracteres alfabeticos',
             'name.max' => 'El nombre debe contener como maximo de 255 caracteres',
             'name.min' => 'El nombre debe contener al menos 1 caracter',
             'lastname.string' => 'El apellido debe ser una cadena de caracteres',
-            'lastname.alpha' => 'El apellido debe contener caracteres alfabeticos',
             'lastname.max' => 'El apellido debe contener como maximo de 255 caracteres',
             'lastname.min' => 'El apellido debe contener al menos 1 caracter',
             'username.string' => 'El nombre de usuario debe ser una cadena de caracteres',
-            'username.alpha_dash' => 'El nombre de usuario debe contener caracteres alfabeticos guiones y guiones bajos',
             'username.max' => 'El nombre de usuario debe contener menos de 80 caracteres',
             'username.min' => 'El nombre de usuario debe contener al menos 7 caracteres',
             'email.email' => 'El correo electronico debe ser una direccion de correo valida',

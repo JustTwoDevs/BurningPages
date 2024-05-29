@@ -81,8 +81,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
          * BackingRequests
          * Rutas de usuario registrado:
          * 1. Crear una solicitud de aval
+         * 2. Obtener todas mis solicitudes de aval
          */
-        Route::post('v1/backingRequests', [BackingRequestController::class, 'store']);
+        Route::post('v1/myprofile/backingRequests', [BackingRequestController::class, 'store']);
+        Route::get('v1/myprofile/backingRequests', [BackingRequestController::class, 'indexByProfile']);
 
         /**
          * ReviewRates
