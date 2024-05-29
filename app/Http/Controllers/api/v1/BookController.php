@@ -10,7 +10,9 @@ use Illuminate\Http\Request;
 use App\Http\Requests\api\v1\BookStoreRequest;
 use App\Http\Requests\api\v1\BookUpdateRequest;
 use App\Http\Resources\BookResource;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Storage;
+use PhpParser\Node\Stmt\TryCatch;
 
 class BookController extends Controller
 {
@@ -216,12 +218,17 @@ class BookController extends Controller
      */
     public function destroy(Book $book)
     {
-        Storage::delete("public/" . $book->image_path);
-        $book->genres()->detach();
-        $book->authors()->detach();
-        $book->bookSagas()->detach();
-        $book->delete();
-        return response()->json(['message' => 'Book successfully removed'], 200);
+        try {
+            $book_image_path = $book->image_path;
+            $book->genres()->detach();
+            $book->authors()->detach();
+            $book->bookSagas()->detach();
+            $book->delete();
+            Storage::delete("public/" . $book_image_path);
+            return response()->json(['message' => 'Book successfully removed'], 200);
+        } catch (QueryException $e) {
+            return response()->json(['message' => 'The are resources that already use this book plz remove them before'], 400);
+        }
     }
 
     /**

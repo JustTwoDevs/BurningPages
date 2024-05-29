@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\api\v1\AuthorStoreRequest;
 use App\Http\Requests\api\v1\AuthorUpdateRequest;
 use App\Http\Resources\AuthorResource;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 
@@ -178,9 +179,14 @@ class AuthorController extends Controller
      */
     public function destroy(Author $author)
     {
-        Storage::delete('public/' . $author->image_path);
-        $author->delete();
-        return response()->json(['message' => 'Author successfully removed'], 200);
+        try {
+            $author_image_path = $author->image_path;
+            $author->delete();
+            Storage::delete('public/' . $author_image_path);
+            return response()->json(['message' => 'Author successfully removed'], 200);
+        } catch (QueryException $e) {
+            return response()->json(['message' => 'The are resources that already use this author plz remove them before'], 400);
+        }
     }
 
     /**

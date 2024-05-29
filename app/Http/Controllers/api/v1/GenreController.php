@@ -7,6 +7,7 @@ use App\Models\Genre;
 use App\Http\Requests\api\v1\GenreStoreRequest;
 use App\Http\Requests\api\v1\GenreUpdateRequest;
 use App\Http\Resources\GenreResource;
+use Illuminate\Database\QueryException;
 
 class GenreController extends Controller
 {
@@ -50,7 +51,11 @@ class GenreController extends Controller
      */
     public function destroy(Genre $genre)
     {
-        $genre->delete();
-        return response()->json(['message' => 'Genre successfully removed'], 200);
+        try {
+            $genre->delete();
+            return response()->json(['message' => 'Genre successfully removed'], 200);
+        } catch (QueryException $e) {
+            return response()->json(['message' => 'The are resources that already use this genre plz remove them before'], 400);
+        }
     }
 }
