@@ -11,6 +11,7 @@ use App\Http\Requests\api\v1\BookSagaUpdateRequest;
 use App\Http\Requests\api\v1\AddBookStoreRequest;
 use App\Http\Resources\BookSagaResource;
 use App\Models\RegisteredUser;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Storage;
 
 class BookSagaController extends Controller
@@ -135,13 +136,14 @@ class BookSagaController extends Controller
      */
     public function store(BookSagaStoreRequest $request)
     {
-        $request['burningmeter'] = 0;
-        $request['readersScore'] = 0;
-
         $request['image_path'] = $request->input('cover');
         $bookSaga = BookSaga::create($request->all());
         if (isset($request->books)) {
-            $bookSaga->books()->attach($request->books, ['order' => 1]);
+            $books = array();
+            foreach ($request->books as $key => $value) {
+                $books[$value] = ["order" => $key];
+            }
+            $bookSaga->books()->attach($books);
             $bookSaga->load('books');
             $bookSaga["genres"] = $bookSaga->getGenresAttribute();
             $bookSaga["authors"] = $bookSaga->getAuthorsAttribute();
@@ -188,7 +190,14 @@ class BookSagaController extends Controller
     {
         $request['image_path'] = $request->input('cover');
         $bookSaga->update($request->all());
-        if ($request->books) $bookSaga->books()->sync($request->books);
+        if ($request->books) {
+            $books = array();
+            foreach ($request->books as $key => $value) {
+                $books[$value] = ["order" => $key];
+            }
+            $bookSaga->books()->sync($books);
+            $bookSaga->load("books");
+        }
         return response()->json(['bookSaga' => new BookSagaResource($bookSaga)], 200);
     }
 
@@ -197,10 +206,15 @@ class BookSagaController extends Controller
      */
     public function destroy(BookSaga $bookSaga)
     {
-        Storage::delete('public/' . $bookSaga->image_path);
-        $bookSaga->books()->detach();
-        $bookSaga->delete();
-        return response()->json(['message' => 'Book Saga successfully removed'], 200);
+        try {
+            $bookSaga_image_path = $bookSaga->image_path;
+            $bookSaga->books()->detach();
+            $bookSaga->delete();
+            Storage::delete('public/' . $bookSaga_image_path);
+            return response()->json(['message' => 'Book Saga successfully removed'], 200);
+        } catch (QueryException $e) {
+            return response()->json(['message' => 'The are resources that already use this BookSaga plz remove them before'], 400);
+        }
     }
 
     /**
