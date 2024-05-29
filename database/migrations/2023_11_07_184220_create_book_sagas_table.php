@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id()->autoIncrement();
             $table->string('name', 100)->nullable(false)->unique();
             $table->mediumText('sinopsis')->nullable(false);
-            $table->double('burningmeter')->nullable(false);
-            $table->double('readersScore')->nullable(false);
+            $table->double('burningmeter')->nullable(true);
+            $table->double('readersScore')->nullable(true);
             $table->string('image_path', 255)->nullable(true);
             $table->timestamps();
         });
